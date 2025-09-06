@@ -23,11 +23,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.luffy001.eardrum.lib.AudioFile
-import com.luffy001.eardrum.lib.PlayerController
+import com.luffy001.eardrum.lib.PlayerViewModel
 import com.luffy001.eardrum.lib.audioList
 import com.luffy001.eardrum.lib.imageFromPath
+import com.luffy001.eardrum.lib.playerController
 
-lateinit var playerController: PlayerController
 lateinit var navController : NavController
 @Composable
 fun Component() {
@@ -78,10 +78,10 @@ fun BoxData(audio: AudioFile) {
 }
 
 fun initPlayer(audio: AudioFile){
-    playerController = PlayerController(audioList)
+    val indexItem = audioList.indexOf(audio)
+    playerController = PlayerViewModel(audioList, indexItem)
     playerController.prepareMedia()
-    playerController.playAndStop()
-    navController.navigate(Screens.PlayerScreen.route + "/${audio.id}")
+    navController.navigate(Screens.PlayerScreen.route)
 }
 
 @Composable
