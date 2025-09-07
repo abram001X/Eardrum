@@ -13,22 +13,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.audioFiles
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.luffy001.eardrum.PlayerComponents.msToTime
+import com.luffy001.eardrum.TopBar
 import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.lib.PlayerViewModel
 import com.luffy001.eardrum.lib.audioList
 import com.luffy001.eardrum.lib.imageFromPath
 import com.luffy001.eardrum.lib.playerController
 
-lateinit var navController : NavController
+lateinit var navController: NavController
+
 @Composable
 fun Component() {
     Box {
@@ -55,9 +60,11 @@ fun BoxData(audio: AudioFile) {
             .height(70.dp)
             .clickable(onClick = { initPlayer(audio) })
     ) {
-        Box(Modifier
-            .width(80.dp)
-            .fillMaxHeight()) {
+        Box(
+            Modifier
+                .width(80.dp)
+                .fillMaxHeight()
+        ) {
             if (image !== null) {
                 Image(
                     bitmap = image,
@@ -72,20 +79,35 @@ fun BoxData(audio: AudioFile) {
                 .padding(start = 15.dp)
         ) {
             Text(audio.name, color = Color.White, maxLines = 1)
-            Text(audio.duration.toString(), color = Color.White, maxLines = 1)
+            Text(msToTime(audio.duration.toLong()), color = Color.White, maxLines = 1)
         }
     }
 }
 
-fun initPlayer(audio: AudioFile){
+fun initPlayer(audio: AudioFile) {
     val indexItem = audioList.indexOf(audio)
     playerController = PlayerViewModel(audioList, indexItem)
     playerController.prepareMedia()
+    playerController.setIsPlaying()
     navController.navigate(Screens.PlayerScreen.route)
 }
 
 @Composable
 fun InitHome(navigation: NavController) {
     navController = navigation
-    Component()
+    Scaffold(topBar = { TopBar() }) { innerPadding ->
+        val image = painterResource(id = R.drawable.background)
+        Image(
+            painter = image,
+            contentDescription = "Background",
+            modifier = Modifier.fillMaxSize()
+        )
+        Column(
+            Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
+            Component()
+        }
+    }
 }

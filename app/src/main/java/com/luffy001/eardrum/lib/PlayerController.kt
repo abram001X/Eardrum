@@ -3,7 +3,6 @@ package com.luffy001.eardrum.lib
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -19,7 +18,7 @@ class PlayerViewModel(uriList: List<AudioFile>, position: Int = 0) : ViewModel()
     var playList by mutableStateOf(uriList)
         private set
     val player = ExoPlayer.Builder(MyApplication.instance).build()
-    var isPlaying by mutableStateOf(true)
+    var isPlaying by mutableStateOf(false)
         private set
     val indexItem = position
     var audioPlaying by mutableStateOf(playList[position])
@@ -28,6 +27,7 @@ class PlayerViewModel(uriList: List<AudioFile>, position: Int = 0) : ViewModel()
     var currentPosition by mutableFloatStateOf(player.currentPosition.toFloat())
         private set
 
+    var isRandom by mutableStateOf(false)
     fun prepareMedia() {
         playList.forEach { audioFile ->
             val mediaItem = MediaItem.fromUri(audioFile.contentUri)
@@ -35,7 +35,8 @@ class PlayerViewModel(uriList: List<AudioFile>, position: Int = 0) : ViewModel()
         }
         player.prepare()
         player.seekTo(indexItem, 0L)
-        playerController.playAndStop()
+        audioPlaying = playList[indexItem]
+        playAndStop()
     }
 
     fun playAndStop() {
@@ -68,6 +69,14 @@ class PlayerViewModel(uriList: List<AudioFile>, position: Int = 0) : ViewModel()
         Log.i("pos", position.toString())
         player.seekTo(position)
         currentPosition = player.currentPosition.toFloat()
+    }
+
+    fun activeRandomMode(){
+        player.shuffleModeEnabled = !isRandom
+    }
+
+    fun setIsPlaying(){
+        isPlaying = true
     }
 }
 
