@@ -43,7 +43,7 @@ fun InitPlayerApp() {
     LaunchedEffect(playerController.audioPlaying) {
         audioFile = playerController.audioPlaying
     }
-    Scaffold(topBar = { TopBar2() }) { innerPadding ->
+    Scaffold(topBar = { TopBar2(Screens.HomeScreen.route, "Escuchando") }) { innerPadding ->
         val image = painterResource(id = R.drawable.background)
         Image(
             painter = image,
@@ -56,7 +56,7 @@ fun InitPlayerApp() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar2() {
+fun TopBar2(navigation: String, title: String) {
     val arrowBack = painterResource(R.drawable.ic_arrow_back)
     TopAppBar(title = {
         Icon(
@@ -64,11 +64,11 @@ fun TopBar2() {
             contentDescription = "back",
             Modifier
                 .clickable(onClick = {
-                    navController.navigate(Screens.HomeScreen.route)
+                    navController.navigate(navigation)
                 })
         )
 
-        Text(text = "Eardrum", Modifier.padding(start = 30.dp))
+        Text(text = title, Modifier.padding(start = 30.dp))
     })
 }
 
@@ -99,7 +99,7 @@ fun PlayerApp(padding: PaddingValues) {
     Column(
         Modifier
             .fillMaxSize()
-            .padding(padding),
+            .padding(top = padding.calculateTopPadding()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

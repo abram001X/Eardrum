@@ -20,7 +20,6 @@ import com.luffy001.eardrum.ui.theme.EardrumTheme
 lateinit var audioFiles: MutableList<AudioFile>
 
 class MainActivity : ComponentActivity() {
-
     private val REQUEST_CODE_AUDIO = 100
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +32,6 @@ class MainActivity : ComponentActivity() {
 
         }
     }
-
     private fun checkAudioPermission() {
 
         if (!ContextCompat.checkSelfPermission(
@@ -69,7 +67,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

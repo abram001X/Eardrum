@@ -64,19 +64,21 @@ class PlayerViewModel(uriList: List<AudioFile>, position: Int = 0) : ViewModel()
         }
         if (!isPlaying) job.cancel()
     }
-
     fun setPosition(position: Long) {
         Log.i("pos", position.toString())
         player.seekTo(position)
         currentPosition = player.currentPosition.toFloat()
     }
-
-    fun activeRandomMode(){
+    fun activeRandomMode() {
         player.shuffleModeEnabled = !isRandom
+        isRandom = !isRandom
     }
-
-    fun setIsPlaying(){
+    fun setIsPlaying() {
         isPlaying = true
+    }
+    fun changeMusic(position: Int = 0){
+        player.seekTo(position, 0L)
+        playAndStop()
     }
 }
 

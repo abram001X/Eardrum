@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.luffy001.eardrum.screens.InitHome
+import com.luffy001.eardrum.screens.InitPlayListReproduction
 import com.luffy001.eardrum.screens.InitPlayerApp
 import com.luffy001.eardrum.screens.Screens
 
@@ -18,6 +19,9 @@ fun AppNavigation(){
         }
         composable(route = Screens.PlayerScreen.route){
             InitPlayerApp()
+        }
+        composable(route = Screens.PlaylistReproductionScreen.route){
+            InitPlayListReproduction()
         }
     }
 }
