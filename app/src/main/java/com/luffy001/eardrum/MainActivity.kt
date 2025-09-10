@@ -29,7 +29,6 @@ class MainActivity : ComponentActivity() {
             EardrumTheme {
                         AppNavigation()
             }
-
         }
     }
     private fun checkAudioPermission() {
