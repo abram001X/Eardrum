@@ -43,12 +43,12 @@ fun BoxSession(session: Int, isSession: Boolean, pagerState: PagerState) {
     val totalWidth = LocalConfiguration.current.screenWidthDp.dp
     val modifier = if(!isSession) {
         Modifier
-            .width(totalWidth * 0.5f)
+            .width(totalWidth * 0.33f)
             .fillMaxHeight()
             .clickable(onClick = { coroutine.launch{ pagerState.scrollToPage(session) } })
     }else {
         Modifier
-            .width(totalWidth * 0.5f)
+            .width(totalWidth * 0.33f)
             .fillMaxHeight()
             .clickable(onClick = {coroutine.launch{ pagerState.scrollToPage(session) }})
             .drawBehind {
@@ -62,10 +62,10 @@ fun BoxSession(session: Int, isSession: Boolean, pagerState: PagerState) {
     }
     val content = Alignment.Center
     val colorCurrent = if(isSession) Color.Blue else Color.Black
-    val sessionString = if (session == 0) "Canciones" else "Descargar"
+    val sessionString = listOf("Canciones", "Playlists", "Descargar")
 
 
     Box(modifier = modifier, contentAlignment = content) {
-        Text(text = sessionString, fontSize = 22.sp, color = colorCurrent)
+        Text(text = sessionString[session], fontSize = 22.sp, color = colorCurrent)
     }
 }

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -25,12 +24,22 @@ import androidx.compose.ui.res.painterResource
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.audioFiles
 import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.luffy001.eardrum.HomeComponents.BoxPlayingMusic
 import com.luffy001.eardrum.Pages.InitDownloadPage
+import com.luffy001.eardrum.Pages.InitPlayListsPage
+import com.luffy001.eardrum.Pages.PlaylistSelect
 import com.luffy001.eardrum.Pages.SessionsPages
 import com.luffy001.eardrum.PlayerComponents.msToTime
 import com.luffy001.eardrum.TopBar
@@ -41,24 +50,24 @@ import com.luffy001.eardrum.lib.imageFromPath
 import com.luffy001.eardrum.lib.playerController
 
 lateinit var navController: NavController
+
 @Composable
 fun Component() {
     val pagerState = rememberPagerState(pageCount = {
-        2
+        3
     })
-
     val components: List<@Composable () -> Unit> = listOf({
         ListMusic()
-    }, { InitDownloadPage() })
+    }, { InitPlayListsPage() }, { InitDownloadPage() })
+
     val totalHeight = LocalConfiguration.current.screenHeightDp.dp
     Column(modifier = Modifier.height(totalHeight * 0.79f)) {
         SessionsPages(pagerState)
-        HorizontalPager(state = pagerState, beyondViewportPageCount = 2) { page ->
-
+        HorizontalPager(state = pagerState, beyondViewportPageCount = 3) { page ->
             components[page]()
         }
     }
-        BoxPlayingMusic()
+    BoxPlayingMusic()
 }
 
 @Composable
@@ -77,7 +86,13 @@ fun ListMusic() {
 }
 
 @Composable
-fun BoxData(audio: AudioFile, onClick: () -> Unit) {
+fun BoxData(
+    audio: AudioFile,
+    isPlaylist: Boolean = false,
+    namePlaylist: String? = null,
+    onClick: () -> Unit
+) {
+    val totalWidth = LocalConfiguration.current.screenWidthDp.dp
     val modifier = if (audio == playerController.audioPlaying) {
         Modifier
             .fillMaxWidth()
@@ -119,17 +134,50 @@ fun BoxData(audio: AudioFile, onClick: () -> Unit) {
             }
             Column(
                 Modifier
-                    .fillMaxSize()
+                    .fillMaxHeight()
+                    .width(totalWidth * 0.7f)
                     .padding(start = 15.dp)
             ) {
                 Text(audio.name, color = Color.White, maxLines = 1)
                 Text(msToTime(audio.duration.toLong()), color = Color.White, maxLines = 1)
             }
+            MenuMusicPlaylist(isPlaylist, audio, namePlaylist)
         }
     }
     Spacer(Modifier.height(10.dp))
 }
 
+@Composable
+fun OptionMusic(audio: AudioFile) {
+    var isSelectOptions by remember { mutableStateOf(true) }
+    if (isSelectOptions) {
+        Box() {
+            Popup(
+                alignment = Alignment.Center,
+                properties = PopupProperties(),
+                onDismissRequest = { isSelectOptions = false }
+            ) {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)
+                        .height(230.dp)
+                        .background(Color.Black)
+                ) {
+                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "Agregar musica a playlist:",
+                            color = Color.White,
+                            fontSize = 20.sp
+                        )
+                    }
+                    Spacer(Modifier.height(13.dp))
+                    PlaylistSelect(audio.contentUri, audio.name)
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun InitHome(navigation: NavController) {
@@ -137,9 +185,7 @@ fun InitHome(navigation: NavController) {
     Scaffold(topBar = { TopBar() }) { innerPadding ->
         val image = painterResource(id = R.drawable.background)
         Image(
-            painter = image,
-            contentDescription = "Background",
-            modifier = Modifier.fillMaxSize()
+            painter = image, contentDescription = "Background", modifier = Modifier.fillMaxSize()
         )
         Column(
             Modifier

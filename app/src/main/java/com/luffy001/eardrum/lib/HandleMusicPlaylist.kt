@@ -1,0 +1,98 @@
+package com.luffy001.eardrum.lib
+
+import android.content.ContentUris
+import android.media.MediaMetadataRetriever
+import android.net.Uri
+import android.provider.MediaStore
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import com.luffy001.eardrum.MyApplication
+import com.luffy001.eardrum.network.Data
+import java.io.File
+import java.io.FileOutputStream
+
+class HandleMusicPlaylist() : ViewModel() {
+    val internalDir = MyApplication.instance.filesDir
+    val playlists = File(internalDir.absolutePath, "playlists")
+    var playlistsModel by mutableStateOf((emptyArray<String>()))
+    var listMusicsModel by mutableStateOf<List<AudioFile>>(emptyList())
+    fun addMusicToPlaylist(namePlaylist: String, uri: Uri, name: String) {
+        val inputStream = MyApplication.instance.contentResolver.openInputStream(uri)
+        val internalPlaylists = File(playlists.absolutePath, namePlaylist)
+        val newMusic = File(internalPlaylists.absolutePath, name)
+        val outputStream = FileOutputStream(newMusic)
+        try {
+            val buffer = ByteArray(1024)
+            var length: Int
+            if (inputStream !== null) {
+                while (inputStream.read(buffer).also { length = it } > 0) {
+                    outputStream.write(buffer, 0, length)
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.i("play", e.message.toString())
+        } finally {
+            inputStream?.close()
+            outputStream.close()
+        }
+    }
+
+    fun getMusicsPlaylist(namePlaylist: String) {
+        try {
+            val musicsList = File(playlists.absolutePath, namePlaylist)
+            if (musicsList.list() !== null) {
+                playlistsModel = musicsList.list()
+                loadFilesPlaylist(musicsList)
+            }
+        } catch (e: Exception) {
+            Log.i("play", e.message.toString())
+        }
+    }
+
+    fun loadFilesPlaylist(musicsList: File) {
+        val retriever = MediaMetadataRetriever()
+        try {
+            val listsAudio = mutableListOf<AudioFile>()
+            val fileList = musicsList.listFiles()
+            for (index in fileList.indices) {
+                retriever.setDataSource(fileList[index].absolutePath)
+                val id = index.toLong()
+                val duration =
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                        ?.toInt() ?: 0
+                val name =
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE).toString()
+                val contentUri = Uri.fromFile(fileList[index])
+                val audio = AudioFile(id, name, duration, contentUri)
+                listsAudio.add(audio)
+            }
+            listMusicsModel = listsAudio
+        } catch (e: Exception) {
+            Log.i("play", "Error: ${e.message.toString()}")
+        } finally {
+            retriever.release()
+        }
+
+    }
+
+    fun removeMusicFromPlaylists(namePlaylist: String, nameMusic: String) {
+        try {
+            val playlistFolder = File(playlists.absolutePath, namePlaylist)
+            val musicFile = File(playlistFolder.absolutePath, nameMusic)
+            if (musicFile.delete()) {
+                Log.i("play", "${musicFile}:  file deleted")
+            } else Log.i("play", "${musicFile}:  file error")
+        } catch (e: Exception) {
+            Log.i("play", "Error: ${e.message}")
+        }
+
+    }
+
+}
+
+val musicPlaylist by mutableStateOf(HandleMusicPlaylist())

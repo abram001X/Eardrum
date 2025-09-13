@@ -5,6 +5,7 @@ import android.content.ContentUris
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 
 data class AudioFile(
     val id: Long,
@@ -27,7 +28,7 @@ fun loadFilesAudio(resolver: ContentResolver): MutableList<AudioFile> {
     val sortOrder = "${MediaStore.Audio.Media.DISPLAY_NAME} ASC"
     val projection = arrayOf(
         MediaStore.Audio.Media._ID,
-        MediaStore.Audio.Media.DISPLAY_NAME,
+        MediaStore.Audio.Media.TITLE,
         MediaStore.Audio.Media.DURATION,
         MediaStore.Audio.Media.SIZE,
         MediaStore.Audio.Media.RELATIVE_PATH
@@ -41,7 +42,7 @@ fun loadFilesAudio(resolver: ContentResolver): MutableList<AudioFile> {
     )
     query?.use { cursor ->
         val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
-        val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
+        val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
         val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
         while (cursor.moveToNext()) {
             val id = cursor.getLong(idColumn)
@@ -57,6 +58,7 @@ fun loadFilesAudio(resolver: ContentResolver): MutableList<AudioFile> {
     }
     return audioList
 }
+
 
 
 
