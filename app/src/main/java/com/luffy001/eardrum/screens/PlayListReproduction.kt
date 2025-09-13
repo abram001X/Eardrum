@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import com.luffy001.eardrum.HomeComponents.BoxData
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.TopBar
 import com.luffy001.eardrum.audioFiles
@@ -19,7 +20,7 @@ import com.luffy001.eardrum.lib.playerController
 @Composable
 fun PlayListReproduction() {
     LazyColumn(Modifier.fillMaxSize()) {
-        items(audioFiles) { audio ->
+        items(playerController.playList) { audio ->
             BoxData(audio) {
                 val position = audioList.indexOf(audio)
                 playerController.changeMusic(position)

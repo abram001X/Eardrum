@@ -6,12 +6,14 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
+import java.sql.Date
 
 data class AudioFile(
     val id: Long,
     val name: String,
     val duration: Int,
-    val contentUri: Uri
+    val contentUri: Uri,
+    val date: Int
 )
 val audioList = mutableListOf<AudioFile>()
 
@@ -31,6 +33,7 @@ fun loadFilesAudio(resolver: ContentResolver): MutableList<AudioFile> {
         MediaStore.Audio.Media.TITLE,
         MediaStore.Audio.Media.DURATION,
         MediaStore.Audio.Media.SIZE,
+        MediaStore.Audio.Media.DATE_ADDED,
         MediaStore.Audio.Media.RELATIVE_PATH
     )
     val query = resolver.query(
@@ -44,6 +47,7 @@ fun loadFilesAudio(resolver: ContentResolver): MutableList<AudioFile> {
         val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
         val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
         val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
+        val dateColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED)
         while (cursor.moveToNext()) {
             val id = cursor.getLong(idColumn)
             val name = cursor.getString(nameColumn)
@@ -52,7 +56,8 @@ fun loadFilesAudio(resolver: ContentResolver): MutableList<AudioFile> {
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 id
             )
-            val audio = AudioFile(id, name, duration, contentUri)
+            val date = cursor.getInt(dateColumn)
+            val audio = AudioFile(id, name, duration, contentUri, date)
             audioList.add(audio)
         }
     }

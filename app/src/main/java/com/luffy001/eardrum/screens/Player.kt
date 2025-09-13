@@ -89,7 +89,6 @@ fun ImagePlayer() {
 
     )
 }
-
 @Composable
 fun PlayerApp(padding: PaddingValues) {
     LaunchedEffect(playerController.isPlaying) {

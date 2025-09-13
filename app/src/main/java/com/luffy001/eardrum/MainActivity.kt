@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.lib.loadFilesAudio
+import com.luffy001.eardrum.lib.uiModel
 import com.luffy001.eardrum.navigation.AppNavigation
 import com.luffy001.eardrum.ui.theme.EardrumTheme
 
@@ -27,11 +28,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             checkAudioPermission()
             EardrumTheme {
-                        AppNavigation()
+                AppNavigation()
             }
 
         }
     }
+
     private fun checkAudioPermission() {
 
         if (!ContextCompat.checkSelfPermission(
@@ -46,7 +48,13 @@ class MainActivity : ComponentActivity() {
                 REQUEST_CODE_AUDIO
             )
         } else {
-            audioFiles = loadFilesAudio(contentResolver)
+
+            audioFiles =
+                uiModel.musicsList.ifEmpty {
+                    loadFilesAudio(
+                        contentResolver
+                    )
+                }
         }
     }
 
@@ -57,10 +65,15 @@ class MainActivity : ComponentActivity() {
         deviceId: Int
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
-        if (requestCode.equals(REQUEST_CODE_AUDIO)) {
-            if (grantResults.isNotEmpty() && grantResults[0].equals(PackageManager.PERMISSION_GRANTED)) {
+        if (requestCode == REQUEST_CODE_AUDIO) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //permiso concedido
-                audioFiles = loadFilesAudio(contentResolver)
+                audioFiles =
+                    uiModel.musicsList.ifEmpty {
+                        loadFilesAudio(
+                            contentResolver
+                        )
+                    }
             } else {
                 audioFiles = mutableListOf()
             }

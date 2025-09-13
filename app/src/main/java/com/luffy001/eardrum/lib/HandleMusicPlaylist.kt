@@ -1,17 +1,13 @@
 package com.luffy001.eardrum.lib
 
-import android.content.ContentUris
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.provider.MediaStore
 import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.luffy001.eardrum.MyApplication
-import com.luffy001.eardrum.network.Data
 import java.io.File
 import java.io.FileOutputStream
 
@@ -67,8 +63,12 @@ class HandleMusicPlaylist() : ViewModel() {
                         ?.toInt() ?: 0
                 val name =
                     retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE).toString()
+
+                val date =
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE)?.toInt()
+                        ?: 0
                 val contentUri = Uri.fromFile(fileList[index])
-                val audio = AudioFile(id, name, duration, contentUri)
+                val audio = AudioFile(id, name, duration, contentUri, date)
                 listsAudio.add(audio)
             }
             listMusicsModel = listsAudio
@@ -93,6 +93,9 @@ class HandleMusicPlaylist() : ViewModel() {
 
     }
 
+    fun setPlaylistModel(list: List<AudioFile>) {
+        listMusicsModel = list.toMutableList()
+    }
 }
 
 val musicPlaylist by mutableStateOf(HandleMusicPlaylist())
