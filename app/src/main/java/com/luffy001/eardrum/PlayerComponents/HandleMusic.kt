@@ -5,17 +5,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.luffy001.eardrum.R
-import com.luffy001.eardrum.lib.playerController
 import com.luffy001.eardrum.screens.Screens
 import com.luffy001.eardrum.screens.navController
+import com.luffy001.eardrum.service.PlaybackViewModel
 
 @Composable
-fun HandleMusic() {
+fun HandleMusic(viewModel: PlaybackViewModel) {
+    val isRandom by viewModel.isRandom.observeAsState(false)
+    val isPlaying by viewModel.isPlaying.observeAsState(false)
+
     val tint = Color.White
     val leftImage = painterResource(R.drawable.ic_left_arrow)
     val playImage = painterResource(R.drawable.ic_play)
@@ -25,9 +30,9 @@ fun HandleMusic() {
     val orderImage = painterResource(R.drawable.ic_order_playlist)
     val playlistImage = painterResource(R.drawable.ic_playlist)
     Icon(
-        if (playerController.isRandom) orderImage else randomImage, "random", Modifier
+        if (isRandom) orderImage else randomImage, "random", Modifier
             .clickable {
-                changePLayer()
+                changePLayer(viewModel)
             }
             .padding(start = 10.dp)
             .size(30.dp), tint
@@ -35,18 +40,18 @@ fun HandleMusic() {
     Icon(
         leftImage, "Left", Modifier
             .clickable {
-                playerController.previousNextAudio(false)
+                viewModel.previousNextAudio(false)
             }
             .size(100.dp), tint
     )
 
     Icon(
-        painter = if (playerController.isPlaying) pauseImage else playImage,
+        painter = if (isPlaying) pauseImage else playImage,
         contentDescription = "PauseOrPlay",
         Modifier
             .size(100.dp)
             .clickable(onClick = {
-                playerController.playAndStop()
+                viewModel.playAndStop()
             }),
         tint
     )
@@ -56,7 +61,7 @@ fun HandleMusic() {
         "Right",
         Modifier
             .size(100.dp)
-            .clickable(onClick = { playerController.previousNextAudio(true) }),
+            .clickable(onClick = { viewModel.previousNextAudio(true) }),
         tint
     )
 
@@ -72,6 +77,6 @@ fun HandleMusic() {
     )
 }
 
-fun changePLayer() {
-    playerController.activeRandomMode()
+fun changePLayer(viewModel: PlaybackViewModel) {
+    viewModel.activeRandomMode()
 }

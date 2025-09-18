@@ -57,6 +57,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+//media3
+    implementation("androidx.media3:media3-session:1.3.1")
+    implementation("androidx.compose.runtime:runtime-livedata:1.9.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -8,34 +8,38 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.luffy001.eardrum.HomeComponents.BoxData
 import com.luffy001.eardrum.R
-import com.luffy001.eardrum.TopBar
-import com.luffy001.eardrum.audioFiles
-import com.luffy001.eardrum.lib.audioList
-import com.luffy001.eardrum.lib.playerController
+import com.luffy001.eardrum.lib.AudioFile
+import com.luffy001.eardrum.service.PlaybackViewModel
 
 @Composable
-fun PlayListReproduction() {
+fun PlayListReproduction(viewModel: PlaybackViewModel) {
+    val playlist by viewModel.playList.observeAsState(emptyList<AudioFile>())
     LazyColumn(Modifier.fillMaxSize()) {
-        items(playerController.playList) { audio ->
-            BoxData(audio) {
-                val position = audioList.indexOf(audio)
-                playerController.changeMusic(position)
-                playerController.setIsPlaying()
-                navController.navigate(Screens.PlayerScreen.route)
+        items(playlist) { audio ->
+            BoxData(viewModel, audio) {
+                val position = playlist.indexOf(audio)
+                viewModel.changeMusic(position)
+                navController.navigate(Screens.PlayerScreen.route + "/false")
             }
         }
     }
 }
 
 
-
 @Composable
-fun InitPlayListReproduction() {
-    Scaffold(topBar = { TopBar2(Screens.PlayerScreen.route, "Siguiente a reproducir") }) { innerPadding ->
+fun InitPlayListReproduction(viewModel: PlaybackViewModel) {
+    Scaffold(topBar = {
+        TopBar2(
+            Screens.PlayerScreen.route,
+            "Siguiente a reproducir"
+        )
+    }) { innerPadding ->
         val image = painterResource(id = R.drawable.background)
         Image(
             painter = image,
@@ -47,7 +51,7 @@ fun InitPlayListReproduction() {
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            PlayListReproduction()
+            PlayListReproduction(viewModel)
         }
     }
 

@@ -16,12 +16,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.luffy001.eardrum.lib.playerController
-import com.luffy001.eardrum.screens.audioFile
+import com.luffy001.eardrum.service.PlaybackViewModel
 import java.util.concurrent.TimeUnit
 
 
@@ -33,18 +39,26 @@ fun msToTime(ms: Long): String {
 }
 
 @Composable
-fun VisPosition() {
-    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+fun VisPosition(viewModel: PlaybackViewModel) {
+
+    val currentPosition by viewModel.currentPosition.observeAsState(0f)
+    val audioPlaying by viewModel.audioPlaying.observeAsState(null)
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
 
         Text(
             fontSize = 16.sp,
-            text = msToTime(playerController.currentPosition.toLong()),
+            text = msToTime(currentPosition.toLong()),
             color = Color.White
         )
 
         Text(
             fontSize = 16.sp,
-            text = msToTime(audioFile.duration.toLong()),
+            text = msToTime(audioPlaying?.duration?.toLong() ?: 0L),
             color = Color.White,
         )
 
@@ -54,16 +68,26 @@ fun VisPosition() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SliderM3() {
+fun SliderM3(viewModel: PlaybackViewModel) {
+    val isPlaying by viewModel.isPlaying.observeAsState(false)
+    val currentPosition by viewModel.currentPosition.observeAsState(0f)
+    val audioPlaying by viewModel.audioPlaying.observeAsState(null)
+    var duration by remember { mutableFloatStateOf(0f) }
+    LaunchedEffect(isPlaying) {
+        viewModel.runAudio()
+    }
+    LaunchedEffect(audioPlaying) {
+        duration = audioPlaying?.duration?.toFloat() ?: 0f
+    }
     Spacer(Modifier.height(40.dp))
     Slider(
         modifier = Modifier.fillMaxWidth(),
-        value = playerController.currentPosition,
+        value = currentPosition,
         onValueChange = {
-            playerController.setPosition(it.toLong())
+            viewModel.setPosition(it.toLong())
             Log.i("pos", it.toString())
         },
-        valueRange = 0f..audioFile.duration.toFloat(),
+        valueRange = 0f..duration,
         thumb = {
             Box(
                 modifier = Modifier

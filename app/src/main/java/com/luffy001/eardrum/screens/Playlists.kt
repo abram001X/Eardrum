@@ -30,12 +30,11 @@ import com.luffy001.eardrum.HomeComponents.HeaderHome
 import com.luffy001.eardrum.HomeComponents.OptionMusic
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
-import com.luffy001.eardrum.lib.PlayerViewModel
 import com.luffy001.eardrum.lib.musicPlaylist
-import com.luffy001.eardrum.lib.playerController
+import com.luffy001.eardrum.service.PlaybackViewModel
 
 @Composable
-fun InitPlaylist(name: String = "") {
+fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
     Log.i("play", name)
     musicPlaylist.getMusicsPlaylist(name)
     Scaffold(topBar = { TopBar2(Screens.HomeScreen.route, name) }) { innerPadding ->
@@ -48,19 +47,17 @@ fun InitPlaylist(name: String = "") {
                 .padding(top = innerPadding.calculateTopPadding())
                 .fillMaxSize()
         ) {
-            HeaderHome(true)
+            HeaderHome(viewModel, true)
             LazyColumn(Modifier.fillMaxSize()) {
                 items(musicPlaylist.listMusicsModel) { audio ->
-                    BoxData(audio, true, name) {
+                    BoxData(viewModel, audio, true, name) {
                         val indexItem = musicPlaylist.listMusicsModel.indexOf(audio)
-                        playerController = PlayerViewModel(musicPlaylist.listMusicsModel, indexItem)
-                        playerController.prepareMedia()
-                        playerController.setIsPlaying()
-                        navController.navigate(Screens.PlayerScreen.route)
+                        viewModel.setPlaylist(musicPlaylist.listMusicsModel, indexItem)
+                        navController.navigate(Screens.PlayerScreen.route + "/true")
                     }
                 }
             }
-            BoxPlayingMusic()
+            BoxPlayingMusic(viewModel)
         }
     }
 }

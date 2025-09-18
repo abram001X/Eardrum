@@ -5,8 +5,6 @@ import android.content.ContentUris
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
-import java.sql.Date
 
 data class AudioFile(
     val id: Long,

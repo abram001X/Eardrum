@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,19 +34,22 @@ import com.luffy001.eardrum.PlayerComponents.msToTime
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.lib.imageFromPath
-import com.luffy001.eardrum.lib.playerController
 import com.luffy001.eardrum.screens.MenuMusicPlaylist
+import com.luffy001.eardrum.service.PlaybackViewModel
 
 
 @Composable
 fun BoxData(
+    viewModel: PlaybackViewModel,
     audio: AudioFile,
     isPlaylist: Boolean = false,
     namePlaylist: String? = null,
     onClick: () -> Unit
 ) {
+
+    val audioPlaying by viewModel.audioPlaying.observeAsState(null)
     val totalWidth = LocalConfiguration.current.screenWidthDp.dp
-    val modifier = if (audio.name == playerController.audioPlaying.name) {
+    val modifier = if (audio.name == (audioPlaying?.name ?: "")) {
         Modifier
             .fillMaxWidth()
             .height(70.dp)

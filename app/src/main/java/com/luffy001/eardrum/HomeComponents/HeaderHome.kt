@@ -1,5 +1,6 @@
 package com.luffy001.eardrum.HomeComponents
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -23,21 +25,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.audioFiles
-import com.luffy001.eardrum.lib.PlayerViewModel
 import com.luffy001.eardrum.lib.musicPlaylist
-import com.luffy001.eardrum.lib.playerController
 import com.luffy001.eardrum.lib.uiModel
 import com.luffy001.eardrum.screens.Screens
 import com.luffy001.eardrum.screens.navController
+import com.luffy001.eardrum.service.PlaybackViewModel
 import kotlin.random.Random
 
 @Composable
-fun HeaderHome(isPlaylist: Boolean) {
-    var isRandom by remember { mutableStateOf(playerController.isRandom) }
-    LaunchedEffect(playerController.isRandom) {
-        isRandom = playerController.isRandom
+fun HeaderHome(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
+    var isRandom by remember { mutableStateOf(false) }
+    val isRandomModel by viewModel.isRandom.observeAsState(false)
+    LaunchedEffect(isRandomModel) {
+        isRandom = isRandomModel
     }
-    val playIcon = painterResource(R.drawable.ic_play)
+
     val randomIcon = painterResource(R.drawable.ic_random)
     val noRandomIcon = painterResource(R.drawable.ic_order_playlist)
     Row(
@@ -48,14 +50,7 @@ fun HeaderHome(isPlaylist: Boolean) {
     ) {
         Row {
 
-            IconButton(onClick = { playHome(isRandom, isPlaylist) }) {
-                Icon(
-                    painter = playIcon,
-                    tint = Color.White,
-                    modifier = Modifier.size(30.dp),
-                    contentDescription = "play"
-                )
-            }
+            PlayHome(viewModel, isRandom, isPlaylist)
 
             IconButton(onClick = { isRandom = !isRandom }) {
                 Icon(
@@ -112,14 +107,34 @@ fun OrderMusics(isPlaylist: Boolean) {
     }
 
 }
-fun playHome(isRandom: Boolean, isPlaylist: Boolean) {
-    val randomPosition = Random.nextInt(playerController.playList.size)
-    val position = if (isRandom) randomPosition else 0
-    if (isPlaylist) {
-        playerController = PlayerViewModel(musicPlaylist.listMusicsModel, position)
-    } else playerController = PlayerViewModel(uiModel.musicsList, position)
-    playerController.prepareMedia()
-    if (isRandom) playerController.activeRandomMode()
-    playerController.setIsPlaying()
-    navController.navigate(Screens.PlayerScreen.route)
+
+@Composable
+fun PlayHome(viewModel: PlaybackViewModel, isRandom: Boolean, isPlaylist: Boolean) {
+    val playIcon = painterResource(R.drawable.ic_play)
+    IconButton(onClick = {
+        if (isPlaylist) { // usar listas distintas
+            val randomPosition = Random.nextInt(musicPlaylist.listMusicsModel.size)
+            val position = if (isRandom) {
+                randomPosition
+            } else {
+                0
+            }
+            viewModel.setPlaylist(musicPlaylist.listMusicsModel, position)
+        } else {
+            val randomPosition = Random.nextInt(uiModel.musicsList.size)
+            val position = if (isRandom) randomPosition else 0
+            viewModel.setPlaylist(uiModel.musicsList, position)
+        }
+        if (isRandom) {
+            viewModel.activeRandomMode()
+        }
+        navController.navigate(Screens.PlayerScreen.route + "/true")
+    }) {
+        Icon(
+            painter = playIcon,
+            tint = Color.White,
+            modifier = Modifier.size(30.dp),
+            contentDescription = "play"
+        )
+    }
 }
