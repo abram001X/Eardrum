@@ -1,7 +1,7 @@
 package com.luffy001.eardrum.HomeComponents
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,7 +39,6 @@ fun HeaderHome(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
     LaunchedEffect(isRandomModel) {
         isRandom = isRandomModel
     }
-
     val randomIcon = painterResource(R.drawable.ic_random)
     val noRandomIcon = painterResource(R.drawable.ic_order_playlist)
     Row(
@@ -49,9 +48,7 @@ fun HeaderHome(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row {
-
             PlayHome(viewModel, isRandom, isPlaylist)
-
             IconButton(onClick = { isRandom = !isRandom }) {
                 Icon(
                     painter = if (isRandom) noRandomIcon else randomIcon,
@@ -63,8 +60,9 @@ fun HeaderHome(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
                 )
             }
         }
-        OrderMusics(isPlaylist)
-
+        Box {
+            OrderMusics(isPlaylist)
+        }
     }
 }
 

@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import com.luffy001.eardrum.HomeComponents.BoxData
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
@@ -42,9 +43,10 @@ fun InitPlayListReproduction(viewModel: PlaybackViewModel) {
     }) { innerPadding ->
         val image = painterResource(id = R.drawable.background)
         Image(
-            painter = image,
-            contentDescription = "Background",
-            modifier = Modifier.fillMaxSize()
+            painter = image, contentDescription = "Background",
+            modifier = Modifier
+                .padding(top = 23.dp)
+                .fillMaxSize()
         )
         Column(
             Modifier

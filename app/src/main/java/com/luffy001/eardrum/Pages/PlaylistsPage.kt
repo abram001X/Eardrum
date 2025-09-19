@@ -39,7 +39,6 @@ import com.luffy001.eardrum.lib.musicPlaylist
 import com.luffy001.eardrum.lib.playlistController
 import com.luffy001.eardrum.screens.Screens
 import com.luffy001.eardrum.screens.navController
-
 @Composable
 fun InitPlayListsPage() {
     var namePlaylist by remember { mutableStateOf("") }
@@ -62,13 +61,12 @@ fun InitPlayListsPage() {
         Button(onClick = { playlistController.createPlaylist(namePlaylist) }) {
             Text("crear playlists")
         }
-        PlaylistsComponent()
+        PlaylistsComponent(namePlaylist)
     }
 }
 
 @Composable
-fun PlaylistsComponent() {
-
+fun PlaylistsComponent(newName: String) {
     val totalWidth = LocalConfiguration.current.screenWidthDp.dp
     Spacer(Modifier.height(20.dp))
     LazyColumn(Modifier.fillMaxSize()) {
@@ -77,7 +75,6 @@ fun PlaylistsComponent() {
                 { navController.navigate(Screens.PlayListsScreen.route + "/$name") }
             Row(
                 Modifier
-
                     .height(60.dp)
                     .padding(bottom = 10.dp)
                     .clickable(onClick = onCLick)
@@ -96,14 +93,13 @@ fun PlaylistsComponent() {
                         .padding(start = 10.dp)
                         .width(totalWidth * 0.73f)
                 )
-                OptionsPlaylist(name)
+                OptionsPlaylist(name, newName)
             }
         }
     }
 }
-
 @Composable
-fun OptionsPlaylist(namePlaylist: String) {
+fun OptionsPlaylist(namePlaylist: String, newName: String) {
     var expanded by remember { mutableStateOf(false) }
     val optionIcon = painterResource(R.drawable.ic_option)
     Box(
@@ -122,10 +118,13 @@ fun OptionsPlaylist(namePlaylist: String) {
                 text = { Text("Eliminar playlist") },
                 onClick = { playlistController.removePlaylist(namePlaylist) }
             )
+            DropdownMenuItem(
+                text = { Text("Cambiar nombre") },
+                onClick = { playlistController.renamePlaylist(namePlaylist, newName) }
+            )
         }
     }
 }
-
 @Composable
 fun PlaylistSelect(contentUri: Uri, musicName: String) {
     Spacer(Modifier.height(20.dp))

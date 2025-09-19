@@ -1,18 +1,14 @@
 package com.luffy001.eardrum.lib
 
-import android.provider.MediaStore
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.luffy001.eardrum.MyApplication
-import com.luffy001.eardrum.network.Data
 import java.io.File
-import kotlin.collections.List
 
 class HandlePlaylists() : ViewModel() {
-
     val internalDir = MyApplication.instance.filesDir
     val playlists = File(internalDir.absolutePath, "playlists")
     var playlistsModel by mutableStateOf((emptyArray<String>()))
@@ -28,7 +24,6 @@ class HandlePlaylists() : ViewModel() {
             Log.i("play", e.message.toString())
         }
     }
-
     fun createPlaylist(name: String = "") {
         try {
             val playlists = File(internalDir.absolutePath, "playlists")
@@ -56,12 +51,18 @@ class HandlePlaylists() : ViewModel() {
             }
             folderToDelete.delete()
             Log.i("play", "$namePlaylist, borrado")
-
         } catch (e: Exception) {
             Log.i("play", "Error: ${e.message}")
         }
     }
-
+    fun renamePlaylist(namePlaylist: String, newNamePlaylist: String) {
+        try {
+            val newFolder = File(playlists.absolutePath, newNamePlaylist)
+            val playlist = File(playlists.absolutePath, namePlaylist)
+            playlist.renameTo(newFolder)
+        } catch (e: Exception) {
+            Log.i("error", "Error: ${e.message}")
+        }
+    }
 }
-
 var playlistController by mutableStateOf(HandlePlaylists())

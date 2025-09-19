@@ -40,7 +40,10 @@ fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
     Scaffold(topBar = { TopBar2(Screens.HomeScreen.route, name) }) { innerPadding ->
         val image = painterResource(id = R.drawable.background)
         Image(
-            painter = image, contentDescription = "Background", modifier = Modifier.fillMaxSize()
+            painter = image, contentDescription = "Background",
+            modifier = Modifier
+                .padding(top = 23.dp)
+                .fillMaxSize()
         )
         Column(
             Modifier

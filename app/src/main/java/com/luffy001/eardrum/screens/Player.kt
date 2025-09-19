@@ -33,8 +33,6 @@ import com.luffy001.eardrum.PlayerComponents.VisPosition
 import com.luffy001.eardrum.lib.imageFromPath
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.service.PlaybackViewModel
-
-
 @Composable
 fun InitPlayerApp(viewModel: PlaybackViewModel, isPrepared: Boolean = false) {
     LaunchedEffect(key1 = true) {
@@ -45,12 +43,14 @@ fun InitPlayerApp(viewModel: PlaybackViewModel, isPrepared: Boolean = false) {
     Scaffold(topBar = { TopBar2(Screens.HomeScreen.route, "Escuchando") }) { innerPadding ->
         val image = painterResource(id = R.drawable.background)
         Image(
-            painter = image, contentDescription = "Background", modifier = Modifier.fillMaxSize()
+            painter = image, contentDescription = "Background",
+            modifier = Modifier
+                .padding(top = 23.dp)
+                .fillMaxSize()
         )
         PlayerApp(innerPadding, viewModel)
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar2(navigation: String, title: String) {
@@ -82,7 +82,6 @@ fun ImagePlayer(viewModel: PlaybackViewModel) {
 
     )
 }
-
 @Composable
 fun PlayerApp(padding: PaddingValues, viewModel: PlaybackViewModel) {
     val isPlaying by viewModel.isPlaying.observeAsState(false)

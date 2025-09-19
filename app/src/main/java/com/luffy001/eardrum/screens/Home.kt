@@ -31,9 +31,7 @@ import com.luffy001.eardrum.Pages.SessionsPages
 import com.luffy001.eardrum.TopBar
 import com.luffy001.eardrum.lib.uiModel
 import com.luffy001.eardrum.service.PlaybackViewModel
-
 lateinit var navController: NavController
-
 @Composable
 fun Component(viewModel: PlaybackViewModel) {
     val audioPlaying by viewModel.audioPlaying.observeAsState(null)
@@ -66,7 +64,7 @@ fun ListMusic(viewModel: PlaybackViewModel) {
             items(uiModel.musicsList) { audio ->
                 BoxData(viewModel, audio) {
                     val indexItem = uiModel.musicsList.indexOf(audio)
-                    viewModel.setPlaylist(uiModel.musicsList, indexItem)
+                    viewModel.prepareMedia()
                     navController.navigate(Screens.PlayerScreen.route + "/true")
                 }
             }
@@ -80,7 +78,10 @@ fun InitHome(navigation: NavController, viewModel: PlaybackViewModel) {
     Scaffold(topBar = { TopBar() }) { innerPadding ->
         val image = painterResource(id = R.drawable.background)
         Image(
-            painter = image, contentDescription = "Background", modifier = Modifier.fillMaxSize()
+            painter = image, contentDescription = "Background",
+            modifier = Modifier
+                .padding(top = 23.dp)
+                .fillMaxSize()
         )
         Column(
             Modifier

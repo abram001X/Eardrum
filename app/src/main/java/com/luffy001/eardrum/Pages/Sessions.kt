@@ -29,7 +29,6 @@ fun SessionsPages(pager: PagerState) {
         Modifier
             .fillMaxWidth()
             .height(50.dp)
-            .background(Color.White)
     ) {
         repeat(pager.pageCount) { it ->
             BoxSession(it, pager.currentPage == it, pager)
@@ -41,19 +40,19 @@ fun SessionsPages(pager: PagerState) {
 fun BoxSession(session: Int, isSession: Boolean, pagerState: PagerState) {
     val coroutine = rememberCoroutineScope()
     val totalWidth = LocalConfiguration.current.screenWidthDp.dp
-    val modifier = if(!isSession) {
+    val modifier = if (!isSession) {
         Modifier
             .width(totalWidth * 0.33f)
             .fillMaxHeight()
-            .clickable(onClick = { coroutine.launch{ pagerState.scrollToPage(session) } })
-    }else {
+            .clickable(onClick = { coroutine.launch { pagerState.scrollToPage(session) } })
+    } else {
         Modifier
             .width(totalWidth * 0.33f)
             .fillMaxHeight()
-            .clickable(onClick = {coroutine.launch{ pagerState.scrollToPage(session) }})
+            .clickable(onClick = { coroutine.launch { pagerState.scrollToPage(session) } })
             .drawBehind {
                 drawLine(
-                    color = Color.Blue,
+                    color = Color.White,
                     start = Offset(0f, size.height),
                     end = Offset(size.width, size.height),
                     strokeWidth = 2.dp.toPx()
@@ -61,7 +60,7 @@ fun BoxSession(session: Int, isSession: Boolean, pagerState: PagerState) {
             }
     }
     val content = Alignment.Center
-    val colorCurrent = if(isSession) Color.Blue else Color.Black
+    val colorCurrent = Color.White
     val sessionString = listOf("Canciones", "Playlists", "Descargar")
 
 
