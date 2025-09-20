@@ -2,17 +2,26 @@ package com.luffy001.eardrum.lib
 
 import android.content.ContentResolver
 import android.content.ContentUris
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import com.luffy001.eardrum.MyApplication
+import androidx.core.graphics.scale
 
 data class AudioFile(
     val id: Long,
     val name: String,
     val duration: Int,
     val contentUri: Uri,
-    val date: Int
+    val date: Int,
 )
+
 val audioList = mutableListOf<AudioFile>()
 
 
@@ -61,10 +70,6 @@ fun loadFilesAudio(resolver: ContentResolver): MutableList<AudioFile> {
     }
     return audioList
 }
-
-
-
-
 
 
 

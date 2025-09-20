@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.luffy001.eardrum.HomeComponents.BoxData
 import com.luffy001.eardrum.HomeComponents.BoxPlayingMusic
@@ -84,12 +85,12 @@ fun MenuMusicPlaylist(isPlaylist: Boolean, audio: AudioFile, namePlaylist: Strin
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             DropdownMenuItem(
-                text = { Text("Agregar a playlist") },
+                text = { Text("Agregar a playlist", fontFamily = FontFamily.SansSerif) },
                 onClick = { expandedOptions = true }
             )
             if (isPlaylist) {
                 DropdownMenuItem(
-                    text = { Text("Eliminar musica de playlist") },
+                    text = { Text("Eliminar musica de playlist",fontFamily = FontFamily.SansSerif) },
                     onClick = {
                         musicPlaylist.removeMusicFromPlaylists(
                             namePlaylist ?: "",

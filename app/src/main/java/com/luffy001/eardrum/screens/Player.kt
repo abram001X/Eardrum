@@ -37,7 +37,7 @@ import com.luffy001.eardrum.service.PlaybackViewModel
 fun InitPlayerApp(viewModel: PlaybackViewModel, isPrepared: Boolean = false) {
     LaunchedEffect(key1 = true) {
         if (isPrepared) {
-               viewModel.prepareMedia()
+            viewModel.prepareMedia()
         }
     }
     Scaffold(topBar = { TopBar2(Screens.HomeScreen.route, "Escuchando") }) { innerPadding ->

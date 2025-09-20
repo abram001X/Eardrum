@@ -2,8 +2,7 @@ package com.luffy001.eardrum.HomeComponents
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,16 +32,47 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
+import androidx.compose.ui.window.Dialog
 import com.luffy001.eardrum.Pages.PlaylistSelect
 import com.luffy001.eardrum.PlayerComponents.msToTime
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.lib.imageFromPath
+import com.luffy001.eardrum.lib.interfaceViewModel
 import com.luffy001.eardrum.screens.MenuMusicPlaylist
 import com.luffy001.eardrum.service.PlaybackViewModel
 
+fun handleModifierBoxData(
+    audio: AudioFile,
+    audioPlaying: AudioFile? = null,
+    onClick: () -> Unit
+): Modifier {
+    val modifier = if (audio.contentUri == (audioPlaying?.contentUri ?: "")) {
+        Modifier
+            .fillMaxWidth()
+            .height(70.dp)
+            .combinedClickable(
+                onClick = {
+                    if (interfaceViewModel.isPress) interfaceViewModel.setElementsSelected(
+                        audio
+                    ) else onClick()
+                },
+                onLongClick = { interfaceViewModel.activatePressed(true) })
+            .background(Color.Black.copy(alpha = 0.5f))
+    } else {
+        Modifier
+            .height(70.dp)
+            .combinedClickable(
+                onClick = {
+                    if (interfaceViewModel.isPress) interfaceViewModel.setElementsSelected(
+                        audio
+                    ) else onClick()
+                },
+                onLongClick = { interfaceViewModel.activatePressed(true) })
+            .fillMaxWidth()
+    }
+    return modifier
+}
 
 @Composable
 fun BoxData(
@@ -53,99 +82,100 @@ fun BoxData(
     namePlaylist: String? = null,
     onClick: () -> Unit
 ) {
-    val image = imageFromPath(audio.contentUri)
     val audioPlaying by viewModel.audioPlaying.observeAsState(null)
-    val totalWidth = LocalConfiguration.current.screenWidthDp.dp
-    val modifier = if (audio.contentUri == (audioPlaying?.contentUri ?: "")) {
-        Modifier
-            .fillMaxWidth()
-            .height(70.dp)
-            .clickable(onClick = { onClick() })
-            .background(Color.Black.copy(alpha = 0.5f))
-    } else {
-        Modifier
-            .height(70.dp)
-            .clickable(onClick = { onClick() })
-            .fillMaxWidth()
-    }
-    val painter = painterResource(R.drawable.ic_logosimple)
+    val modifier = handleModifierBoxData(audio, audioPlaying, onClick)
     Box(
         modifier = modifier
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 5.dp)
         ) {
-            Box(
-                Modifier
-                    .width(70.dp)
-                    .height(70.dp)
-            ) {
-                if (image !== null) {
-                    Image(
-                        bitmap = image,
-                        contentDescription = audio.name,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(5.dp)),
-                        contentScale = ContentScale.Crop,
-                    )
-                } else Image(
-                    painter,
-                    audio.name,
-                    Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(5.dp)),
-                    contentScale = ContentScale.Crop
-                )
-            }
-            Column(
-                Modifier
-                    .fillMaxHeight()
-                    .width(totalWidth * 0.7f)
-                    .padding(start = 15.dp)
-            ) {
-                Text(
-                    audio.name,
-                    color = Color.White,
-                    maxLines = 2,
-                    fontFamily = FontFamily.SansSerif,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    msToTime(audio.duration.toLong()),
-                    color = Color.White,
-                    fontFamily = FontFamily.SansSerif,
-                    maxLines = 1,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-            MenuMusicPlaylist(isPlaylist, audio, namePlaylist)
+        Spacer(Modifier.height(10.dp))
+            ContentBoxData(audio, isPlaylist, namePlaylist)
         }
     }
-    Spacer(Modifier.height(10.dp))
+}
+
+@Composable
+fun ContentBoxData(audio: AudioFile, isPlaylist: Boolean, namePlaylist: String? = null) {
+    val image = imageFromPath(audio.contentUri)
+    val totalWidth = LocalConfiguration.current.screenWidthDp.dp
+    val painter = painterResource(R.drawable.ic_logosimple)
+    Box(
+        Modifier
+            .width(70.dp)
+            .height(70.dp)
+    ) {
+        if (image !== null) {
+            Image(
+                bitmap = image,
+                contentDescription = audio.name,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(5.dp)),
+                contentScale = ContentScale.Crop,
+            )
+        } else Image(
+            painter,
+            audio.name,
+            Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(5.dp)),
+            contentScale = ContentScale.Crop
+        )
+    }
+    Column(
+        Modifier
+            .fillMaxHeight()
+            .width(totalWidth * 0.7f)
+            .padding(start = 15.dp)
+    ) {
+        Text(
+            audio.name,
+            color = Color.White,
+            maxLines = 2,
+            fontFamily = FontFamily.SansSerif,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Medium
+        )
+        Text(
+            msToTime(audio.duration.toLong()),
+            color = Color.White,
+            fontFamily = FontFamily.SansSerif,
+            maxLines = 1,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium
+        )
+    }
+    if (!interfaceViewModel.isPress) MenuMusicPlaylist(isPlaylist, audio, namePlaylist)
 }
 
 @Composable
 fun OptionMusic(audio: AudioFile) {
     var isSelectOptions by remember { mutableStateOf(true) }
     if (isSelectOptions) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-            Popup(
-                properties = PopupProperties(), onDismissRequest = { isSelectOptions = false }) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(5.dp)),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Dialog(
+                onDismissRequest = { isSelectOptions = false }) {
                 Column(
                     Modifier
                         .fillMaxWidth()
                         .padding(20.dp)
                         .height(230.dp)
                         .background(Color.Black)
+                        .clip(RoundedCornerShape(5.dp))
                 ) {
-                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
                         Text(
                             text = "Agregar musica a playlist:",
                             color = Color.White,
-                            fontSize = 20.sp
+                            fontSize = 20.sp,
+                            fontFamily = FontFamily.SansSerif
                         )
                     }
                     Spacer(Modifier.height(13.dp))

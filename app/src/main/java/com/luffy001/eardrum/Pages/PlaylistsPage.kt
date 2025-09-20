@@ -39,6 +39,7 @@ import com.luffy001.eardrum.lib.musicPlaylist
 import com.luffy001.eardrum.lib.playlistController
 import com.luffy001.eardrum.screens.Screens
 import com.luffy001.eardrum.screens.navController
+
 @Composable
 fun InitPlayListsPage() {
     var namePlaylist by remember { mutableStateOf("") }
@@ -98,6 +99,7 @@ fun PlaylistsComponent(newName: String) {
         }
     }
 }
+
 @Composable
 fun OptionsPlaylist(namePlaylist: String, newName: String) {
     var expanded by remember { mutableStateOf(false) }
@@ -125,6 +127,7 @@ fun OptionsPlaylist(namePlaylist: String, newName: String) {
         }
     }
 }
+
 @Composable
 fun PlaylistSelect(contentUri: Uri, musicName: String) {
     Spacer(Modifier.height(20.dp))

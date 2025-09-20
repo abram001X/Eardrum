@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.audioFiles
+import com.luffy001.eardrum.lib.interfaceViewModel
 import com.luffy001.eardrum.lib.musicPlaylist
 import com.luffy001.eardrum.lib.uiModel
 import com.luffy001.eardrum.screens.Screens
@@ -34,34 +35,56 @@ import kotlin.random.Random
 
 @Composable
 fun HeaderHome(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
-    var isRandom by remember { mutableStateOf(false) }
-    val isRandomModel by viewModel.isRandom.observeAsState(false)
-    LaunchedEffect(isRandomModel) {
-        isRandom = isRandomModel
-    }
+    val isRandom by viewModel.isRandom.observeAsState(false)
     val randomIcon = painterResource(R.drawable.ic_random)
     val noRandomIcon = painterResource(R.drawable.ic_order_playlist)
+    val exitIcon = painterResource(R.drawable.ic_remove_x)
+    val optionIcon = painterResource(R.drawable.ic_option)
     Row(
         Modifier
             .fillMaxWidth()
             .height(40.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row {
-            PlayHome(viewModel, isRandom, isPlaylist)
-            IconButton(onClick = { isRandom = !isRandom }) {
+        if (!interfaceViewModel.isPress) {
+
+            Row {
+                PlayHome(viewModel, isPlaylist)
+                IconButton(onClick = { viewModel.activeRandomMode() }) {
+                    Icon(
+                        painter = if (isRandom) noRandomIcon else randomIcon,
+                        tint = Color.White,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .padding(start = 10.dp),
+                        contentDescription = "play"
+                    )
+                }
+            }
+            Box {
+                OrderMusics(isPlaylist)
+            }
+        } else {
+            IconButton(onClick = { interfaceViewModel.activatePressed(false) }) {
                 Icon(
-                    painter = if (isRandom) noRandomIcon else randomIcon,
+                    painter = exitIcon,
                     tint = Color.White,
                     modifier = Modifier
-                        .size(30.dp)
+                        .size(33.dp)
                         .padding(start = 10.dp),
                     contentDescription = "play"
                 )
             }
-        }
-        Box {
-            OrderMusics(isPlaylist)
+            IconButton(onClick = { }) {
+                Icon(
+                    painter = optionIcon,
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(33.dp)
+                        .padding(start = 10.dp),
+                    contentDescription = "play"
+                )
+            }
         }
     }
 }
@@ -85,7 +108,6 @@ fun OrderMusics(isPlaylist: Boolean) {
                 if (isPlaylist) {
                     musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.name })
                 } else {
-
                     uiModel.setAudioList(audioFiles.sortedBy { it.name })
                 }
             }
@@ -96,35 +118,26 @@ fun OrderMusics(isPlaylist: Boolean) {
                 if (isPlaylist) {
                     musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.date })
                 } else {
-
                     uiModel.setAudioList(audioFiles.sortedBy { it.date })
                 }
             }
         )
-
     }
-
 }
 
 @Composable
-fun PlayHome(viewModel: PlaybackViewModel, isRandom: Boolean, isPlaylist: Boolean) {
+fun PlayHome(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
+    val isRandom by viewModel.isRandom.observeAsState(false)
     val playIcon = painterResource(R.drawable.ic_play)
     IconButton(onClick = {
         if (isPlaylist) { // usar listas distintas
             val randomPosition = Random.nextInt(musicPlaylist.listMusicsModel.size)
-            val position = if (isRandom) {
-                randomPosition
-            } else {
-                0
-            }
+            val position = if (isRandom) randomPosition else 0
             viewModel.setPlaylist(musicPlaylist.listMusicsModel, position)
         } else {
             val randomPosition = Random.nextInt(uiModel.musicsList.size)
             val position = if (isRandom) randomPosition else 0
             viewModel.setPlaylist(uiModel.musicsList, position)
-        }
-        if (isRandom) {
-            viewModel.activeRandomMode()
         }
         navController.navigate(Screens.PlayerScreen.route + "/true")
     }) {

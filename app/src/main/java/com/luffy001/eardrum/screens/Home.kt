@@ -1,5 +1,6 @@
 package com.luffy001.eardrum.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -31,9 +32,12 @@ import com.luffy001.eardrum.Pages.SessionsPages
 import com.luffy001.eardrum.TopBar
 import com.luffy001.eardrum.lib.uiModel
 import com.luffy001.eardrum.service.PlaybackViewModel
+
 lateinit var navController: NavController
+
 @Composable
 fun Component(viewModel: PlaybackViewModel) {
+
     val audioPlaying by viewModel.audioPlaying.observeAsState(null)
     val pagerState = rememberPagerState(pageCount = {
         3
@@ -64,7 +68,7 @@ fun ListMusic(viewModel: PlaybackViewModel) {
             items(uiModel.musicsList) { audio ->
                 BoxData(viewModel, audio) {
                     val indexItem = uiModel.musicsList.indexOf(audio)
-                    viewModel.prepareMedia()
+                    viewModel.setPlaylist(uiModel.musicsList, indexItem)
                     navController.navigate(Screens.PlayerScreen.route + "/true")
                 }
             }

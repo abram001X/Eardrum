@@ -72,7 +72,10 @@ class PlaybackViewModel : ViewModel() {
         try {
             if (_playList.value != null && listUri != null) {
                 _playList.value?.let { controller.setMediaItems(listUri.toMutableList(), true) }
-                if (_playList.value.isEmpty()) controller.prepare()
+                if (_playList.value.isEmpty()) {
+                    controller.prepare()
+                    if (_isRandom.value == true) controller.shuffleModeEnabled = true
+                }
                 controller.seekTo(_indexItem.value ?: 0, 0L)
             }
             _playList.value?.let { it -> _audioPlaying.postValue(it[controller.currentMediaItemIndex]) }
