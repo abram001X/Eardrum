@@ -38,7 +38,6 @@ import com.luffy001.eardrum.service.PlaybackViewModel
 
 @Composable
 fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
-    Log.i("play", name)
     musicPlaylist.getMusicsPlaylist(name)
     Scaffold(topBar = { TopBar2(Screens.HomeScreen.route, name) }) { innerPadding ->
         val image = painterResource(id = R.drawable.background)
@@ -53,7 +52,7 @@ fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
                 .padding(top = innerPadding.calculateTopPadding())
                 .fillMaxSize()
         ) {
-            HeaderHome(viewModel, true)
+            HeaderHome(viewModel, true, isReproduction = false ,name)
             LazyColumn(Modifier.fillMaxSize()) {
                 items(musicPlaylist.listMusicsModel) { audio ->
                     BoxData(viewModel, audio, true, name) {
@@ -105,7 +104,7 @@ fun MenuMusicPlaylist(viewModel: PlaybackViewModel,isPlaylist: Boolean, audio: A
                     onClick = {
                         musicPlaylist.removeMusicFromPlaylists(
                             namePlaylist ?: "",
-                            audio.name
+                            listOf(audio)
                         )
                     }
                 )

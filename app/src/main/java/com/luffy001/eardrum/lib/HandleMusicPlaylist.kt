@@ -15,11 +15,14 @@ class HandleMusicPlaylist() : ViewModel() {
     val internalDir = MyApplication.instance.filesDir
     val playlists = File(internalDir.absolutePath, "playlists")
     var playlistsModel by mutableStateOf((emptyArray<String>()))
+        private set
     var listMusicsModel by mutableStateOf<List<AudioFile>>(emptyList())
+        private set
+
     fun addMusicToPlaylist(namePlaylist: String, listAudio: List<AudioFile>) {
         listAudio.forEach { it ->
-        val uri = it.contentUri
-        val inputStream = MyApplication.instance.contentResolver.openInputStream(uri)
+            val uri = it.contentUri
+            val inputStream = MyApplication.instance.contentResolver.openInputStream(uri)
             val internalPlaylists = File(playlists.absolutePath, namePlaylist)
             val newMusic = File(internalPlaylists.absolutePath, it.name)
             val outputStream = FileOutputStream(newMusic)
@@ -83,13 +86,19 @@ class HandleMusicPlaylist() : ViewModel() {
 
     }
 
-    fun removeMusicFromPlaylists(namePlaylist: String, nameMusic: String) {
+    fun removeMusicFromPlaylists(namePlaylist: String, listAudio: List<AudioFile>) {
         try {
-            val playlistFolder = File(playlists.absolutePath, namePlaylist)
-            val musicFile = File(playlistFolder.absolutePath, nameMusic)
-            if (musicFile.delete()) {
-                Log.i("play", "${musicFile}:  file deleted")
-            } else Log.i("play", "${musicFile}:  file error")
+            val listRemoved = mutableListOf<AudioFile>()
+            listRemoved.addAll(listMusicsModel)
+            listAudio.forEach { it ->
+                val playlistFolder = File(playlists.absolutePath, namePlaylist)
+                val musicFile = File(playlistFolder.absolutePath, it.name)
+                if (musicFile.delete()) {
+                    Log.i("play", "${musicFile}:  file deleted")
+                } else Log.i("play", "${musicFile}:  file error")
+            }
+            listRemoved.removeAll(listAudio)
+            listMusicsModel = listRemoved
         } catch (e: Exception) {
             Log.i("play", "Error: ${e.message}")
         }

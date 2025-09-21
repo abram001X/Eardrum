@@ -43,7 +43,8 @@ import kotlin.random.Random
 fun HeaderHome(
     viewModel: PlaybackViewModel,
     isPlaylist: Boolean,
-    isReproduction: Boolean? = false
+    isReproduction: Boolean? = false,
+    namePlaylist: String = ""
 ) {
     val isRandom by viewModel.isRandom.observeAsState(false)
     val randomIcon = painterResource(R.drawable.ic_random)
@@ -55,7 +56,7 @@ fun HeaderHome(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         if (interfaceViewModel.isPress) {
-            HandleMusicsSelected(viewModel)
+            HandleMusicsSelected(viewModel, isPlaylist, namePlaylist)
         } else {
             Row {
                 PlayHome(viewModel, isPlaylist)
@@ -78,7 +79,7 @@ fun HeaderHome(
 }
 
 @Composable
-fun HandleMusicsSelected(viewModel: PlaybackViewModel) {
+fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, namePlaylist: String) {
     val exitIcon = painterResource(R.drawable.ic_remove_x)
     val optionIcon = painterResource(R.drawable.ic_option)
     var expanded by remember { mutableStateOf(false) }
@@ -127,7 +128,25 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel) {
                         navController.navigate(Screens.PlayerScreen.route + "/true")
                     }
                 )
-                if(playlist.isNotEmpty())DropdownMenuItem(
+                if (isPlaylist) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                "Eliminar de playlist",
+                                fontFamily = FontFamily.SansSerif
+                            )
+                        },
+                        onClick = {
+                            musicPlaylist.removeMusicFromPlaylists(
+                                namePlaylist,
+                                interfaceViewModel.elementsSelected
+                            )
+                            expanded = false
+                            interfaceViewModel.activatePressed(false)
+                        }
+                    )
+                }
+                if (playlist.isNotEmpty()) DropdownMenuItem(
                     text = { Text("Agregar a reproducción", fontFamily = FontFamily.SansSerif) },
                     onClick = {
                         viewModel.addMediaToPlaylist(interfaceViewModel.elementsSelected)
