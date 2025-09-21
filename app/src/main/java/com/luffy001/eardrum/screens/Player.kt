@@ -76,7 +76,6 @@ fun TopBar2(navigation: String, title: String) {
                 navController.navigate(navigation)
             })
         )
-
         Text(text = title, Modifier.padding(start = 30.dp))
     })
 }

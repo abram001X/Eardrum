@@ -39,7 +39,7 @@ import com.luffy001.eardrum.service.PlaybackViewModel
 @Composable
 fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
     musicPlaylist.getMusicsPlaylist(name)
-    Scaffold(topBar = { TopBar2(Screens.HomeScreen.route, name) }) { innerPadding ->
+    Scaffold(topBar = { TopBarSearch(isPlaylist = true) }) { innerPadding ->
         val image = painterResource(id = R.drawable.background)
         Image(
             painter = image, contentDescription = "Background",

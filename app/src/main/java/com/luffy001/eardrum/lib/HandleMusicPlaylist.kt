@@ -18,28 +18,30 @@ class HandleMusicPlaylist() : ViewModel() {
         private set
     var listMusicsModel by mutableStateOf<List<AudioFile>>(emptyList())
         private set
-
+    private lateinit var listAudioMedia: List<AudioFile>
     fun addMusicToPlaylist(namePlaylist: String, listAudio: List<AudioFile>) {
         listAudio.forEach { it ->
             val uri = it.contentUri
             val inputStream = MyApplication.instance.contentResolver.openInputStream(uri)
             val internalPlaylists = File(playlists.absolutePath, namePlaylist)
             val newMusic = File(internalPlaylists.absolutePath, it.name)
-            val outputStream = FileOutputStream(newMusic)
-            try {
-                val buffer = ByteArray(1024)
-                var length: Int
-                if (inputStream !== null) {
-                    while (inputStream.read(buffer).also { length = it } > 0) {
-                        outputStream.write(buffer, 0, length)
+            if (!newMusic.exists()) {
+                val outputStream = FileOutputStream(newMusic)
+                try {
+                    val buffer = ByteArray(1024)
+                    var length: Int
+                    if (inputStream !== null) {
+                        while (inputStream.read(buffer).also { length = it } > 0) {
+                            outputStream.write(buffer, 0, length)
+                        }
                     }
-                }
 
-            } catch (e: Exception) {
-                Log.i("play", e.message.toString())
-            } finally {
-                inputStream?.close()
-                outputStream.close()
+                } catch (e: Exception) {
+                    Log.i("play", e.message.toString())
+                } finally {
+                    inputStream?.close()
+                    outputStream.close()
+                }
             }
         }
     }
@@ -77,6 +79,7 @@ class HandleMusicPlaylist() : ViewModel() {
                 val audio = AudioFile(id, name, duration, contentUri, date)
                 listsAudio.add(audio)
             }
+            listAudioMedia = listsAudio
             listMusicsModel = listsAudio
         } catch (e: Exception) {
             Log.i("play", "Error: ${e.message.toString()}")
@@ -88,8 +91,6 @@ class HandleMusicPlaylist() : ViewModel() {
 
     fun removeMusicFromPlaylists(namePlaylist: String, listAudio: List<AudioFile>) {
         try {
-            val listRemoved = mutableListOf<AudioFile>()
-            listRemoved.addAll(listMusicsModel)
             listAudio.forEach { it ->
                 val playlistFolder = File(playlists.absolutePath, namePlaylist)
                 val musicFile = File(playlistFolder.absolutePath, it.name)
@@ -97,8 +98,7 @@ class HandleMusicPlaylist() : ViewModel() {
                     Log.i("play", "${musicFile}:  file deleted")
                 } else Log.i("play", "${musicFile}:  file error")
             }
-            listRemoved.removeAll(listAudio)
-            listMusicsModel = listRemoved
+            getMusicsPlaylist(namePlaylist)
         } catch (e: Exception) {
             Log.i("play", "Error: ${e.message}")
         }
@@ -106,7 +106,17 @@ class HandleMusicPlaylist() : ViewModel() {
     }
 
     fun setPlaylistModel(list: List<AudioFile>) {
+        listAudioMedia = list
         listMusicsModel = list.toMutableList()
+    }
+
+    fun searchMusicByName(nameMusic: String) {
+        if (nameMusic.trimEnd() == "") {
+            listMusicsModel = listAudioMedia.toMutableList()
+        }
+        val listSearch =
+            listAudioMedia.filter { it -> it.name.lowercase().contains(nameMusic.lowercase()) }
+        listMusicsModel = listSearch.toMutableList()
     }
 }
 
