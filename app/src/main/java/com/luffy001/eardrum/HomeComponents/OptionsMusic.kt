@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -42,36 +43,15 @@ import com.luffy001.eardrum.lib.interfaceViewModel
 import com.luffy001.eardrum.screens.MenuMusicPlaylist
 import com.luffy001.eardrum.service.PlaybackViewModel
 
-fun handleModifierBoxData(
-    audio: AudioFile,
-    audioPlaying: AudioFile? = null,
-    onClick: () -> Unit
-): Modifier {
-    val modifier = if (audio.contentUri == (audioPlaying?.contentUri ?: "")) {
-        Modifier
-            .fillMaxWidth()
-            .height(70.dp)
-            .combinedClickable(
-                onClick = {
-                    if (interfaceViewModel.isPress) interfaceViewModel.setElementsSelected(
-                        audio
-                    ) else onClick()
-                },
-                onLongClick = { interfaceViewModel.activatePressed(true) })
-            .background(Color.Black.copy(alpha = 0.5f))
-    } else {
-        Modifier
-            .height(70.dp)
-            .combinedClickable(
-                onClick = {
-                    if (interfaceViewModel.isPress) interfaceViewModel.setElementsSelected(
-                        audio
-                    ) else onClick()
-                },
-                onLongClick = { interfaceViewModel.activatePressed(true) })
-            .fillMaxWidth()
+@Composable
+fun ChildBoxData(
+    audio: AudioFile, isPlaylist: Boolean, namePlaylist: String? = null
+) {
+    Row(
+        modifier = Modifier.padding(horizontal = 5.dp)
+    ) {
+        ContentBoxData(audio, isPlaylist, namePlaylist)
     }
-    return modifier
 }
 
 @Composable
@@ -82,17 +62,57 @@ fun BoxData(
     namePlaylist: String? = null,
     onClick: () -> Unit
 ) {
+    var colorBackground by remember { mutableStateOf(Color.Transparent) }
+    var isSelected by remember { mutableStateOf(false) }
+    var selectOrNavigate by remember { mutableStateOf({}) }
+    var selectMusic by remember { mutableStateOf({}) }
     val audioPlaying by viewModel.audioPlaying.observeAsState(null)
-    val modifier = handleModifierBoxData(audio, audioPlaying, onClick)
+    LaunchedEffect(interfaceViewModel.isPress) {
+        if (!interfaceViewModel.isPress) isSelected = false
+    }
+    LaunchedEffect(isSelected) {
+        colorBackground =
+            if (isSelected) {
+                Color.LightGray.copy(alpha = 0.5f)
+            } else if (audio.contentUri == (audioPlaying?.contentUri ?: "")) {
+                Color.Black.copy(alpha = 0.5f)
+            } else Color.Transparent
+        selectOrNavigate = {
+            if (isSelected) {
+                interfaceViewModel.removeMusicSelect(audio)
+                isSelected = false
+            } else if (interfaceViewModel.isPress) {
+                interfaceViewModel.setElementsSelected(
+                    audio
+                )
+                isSelected = true
+            } else onClick()
+        }
+        selectMusic = {
+            if (isSelected) {
+                interfaceViewModel.removeMusicSelect(audio)
+                isSelected = false
+            } else {
+
+                interfaceViewModel.setElementsSelected(audio)
+                interfaceViewModel.activatePressed(true)
+                isSelected = true
+            }
+        }
+    }
+    val modifier = Modifier
+        .fillMaxWidth()
+        .height(70.dp)
+        .combinedClickable(onClick = {
+            selectOrNavigate()
+        }, onLongClick = { selectMusic() })
+        .background(colorBackground)
+
+    Spacer(Modifier.height(10.dp))
     Box(
         modifier = modifier
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 5.dp)
-        ) {
-        Spacer(Modifier.height(10.dp))
-            ContentBoxData(audio, isPlaylist, namePlaylist)
-        }
+        ChildBoxData(audio, isPlaylist, namePlaylist)
     }
 }
 
@@ -151,7 +171,7 @@ fun ContentBoxData(audio: AudioFile, isPlaylist: Boolean, namePlaylist: String? 
 }
 
 @Composable
-fun OptionMusic(audio: AudioFile) {
+fun OptionMusic(listAudio: List<AudioFile>) {
     var isSelectOptions by remember { mutableStateOf(true) }
     if (isSelectOptions) {
         Box(
@@ -161,7 +181,10 @@ fun OptionMusic(audio: AudioFile) {
             contentAlignment = Alignment.BottomCenter
         ) {
             Dialog(
-                onDismissRequest = { isSelectOptions = false }) {
+                onDismissRequest = {
+                    isSelectOptions = false
+                    interfaceViewModel.activatePressed(false)
+                }) {
                 Column(
                     Modifier
                         .fillMaxWidth()
@@ -172,14 +195,14 @@ fun OptionMusic(audio: AudioFile) {
                 ) {
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
                         Text(
-                            text = "Agregar musica a playlist:",
+                            text = "Agregar a playlist:",
                             color = Color.White,
                             fontSize = 20.sp,
                             fontFamily = FontFamily.SansSerif
                         )
                     }
                     Spacer(Modifier.height(13.dp))
-                    PlaylistSelect(audio.contentUri, audio.name)
+                    PlaylistSelect(listAudio)
                 }
             }
         }

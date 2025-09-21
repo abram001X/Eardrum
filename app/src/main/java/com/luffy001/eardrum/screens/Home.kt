@@ -30,6 +30,7 @@ import com.luffy001.eardrum.Pages.InitDownloadPage
 import com.luffy001.eardrum.Pages.InitPlayListsPage
 import com.luffy001.eardrum.Pages.SessionsPages
 import com.luffy001.eardrum.TopBar
+import com.luffy001.eardrum.lib.interfaceViewModel
 import com.luffy001.eardrum.lib.uiModel
 import com.luffy001.eardrum.service.PlaybackViewModel
 
@@ -50,7 +51,11 @@ fun Component(viewModel: PlaybackViewModel) {
         if (audioPlaying != null) Modifier.height(totalHeight * 0.79f) else Modifier.fillMaxHeight()
     Column(modifier) {
         SessionsPages(pagerState)
-        HorizontalPager(state = pagerState, beyondViewportPageCount = 3) { page ->
+        HorizontalPager(
+            state = pagerState,
+            beyondViewportPageCount = 3,
+            userScrollEnabled = !interfaceViewModel.isPress
+        ) { page ->
             components[page]()
         }
     }

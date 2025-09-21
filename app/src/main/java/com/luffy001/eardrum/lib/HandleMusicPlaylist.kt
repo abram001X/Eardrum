@@ -16,25 +16,28 @@ class HandleMusicPlaylist() : ViewModel() {
     val playlists = File(internalDir.absolutePath, "playlists")
     var playlistsModel by mutableStateOf((emptyArray<String>()))
     var listMusicsModel by mutableStateOf<List<AudioFile>>(emptyList())
-    fun addMusicToPlaylist(namePlaylist: String, uri: Uri, name: String) {
+    fun addMusicToPlaylist(namePlaylist: String, listAudio: List<AudioFile>) {
+        listAudio.forEach { it ->
+        val uri = it.contentUri
         val inputStream = MyApplication.instance.contentResolver.openInputStream(uri)
-        val internalPlaylists = File(playlists.absolutePath, namePlaylist)
-        val newMusic = File(internalPlaylists.absolutePath, name)
-        val outputStream = FileOutputStream(newMusic)
-        try {
-            val buffer = ByteArray(1024)
-            var length: Int
-            if (inputStream !== null) {
-                while (inputStream.read(buffer).also { length = it } > 0) {
-                    outputStream.write(buffer, 0, length)
+            val internalPlaylists = File(playlists.absolutePath, namePlaylist)
+            val newMusic = File(internalPlaylists.absolutePath, it.name)
+            val outputStream = FileOutputStream(newMusic)
+            try {
+                val buffer = ByteArray(1024)
+                var length: Int
+                if (inputStream !== null) {
+                    while (inputStream.read(buffer).also { length = it } > 0) {
+                        outputStream.write(buffer, 0, length)
+                    }
                 }
-            }
 
-        } catch (e: Exception) {
-            Log.i("play", e.message.toString())
-        } finally {
-            inputStream?.close()
-            outputStream.close()
+            } catch (e: Exception) {
+                Log.i("play", e.message.toString())
+            } finally {
+                inputStream?.close()
+                outputStream.close()
+            }
         }
     }
 

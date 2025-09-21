@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.luffy001.eardrum.lib.interfaceViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -44,12 +45,16 @@ fun BoxSession(session: Int, isSession: Boolean, pagerState: PagerState) {
         Modifier
             .width(totalWidth * 0.33f)
             .fillMaxHeight()
-            .clickable(onClick = { coroutine.launch { pagerState.scrollToPage(session) } })
+            .clickable(onClick = {
+                if(!interfaceViewModel.isPress) coroutine.launch { pagerState.scrollToPage(session) }
+            })
     } else {
         Modifier
             .width(totalWidth * 0.33f)
             .fillMaxHeight()
-            .clickable(onClick = { coroutine.launch { pagerState.scrollToPage(session) } })
+            .clickable(onClick = {
+                if(!interfaceViewModel.isPress) coroutine.launch { pagerState.scrollToPage(session) }
+            })
             .drawBehind {
                 drawLine(
                     color = Color.White,

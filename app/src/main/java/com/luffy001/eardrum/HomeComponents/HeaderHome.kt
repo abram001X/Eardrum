@@ -3,10 +3,12 @@ package com.luffy001.eardrum.HomeComponents
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -19,9 +21,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.audioFiles
@@ -31,6 +35,7 @@ import com.luffy001.eardrum.lib.uiModel
 import com.luffy001.eardrum.screens.Screens
 import com.luffy001.eardrum.screens.navController
 import com.luffy001.eardrum.service.PlaybackViewModel
+import kotlin.math.exp
 import kotlin.random.Random
 
 @Composable
@@ -38,8 +43,6 @@ fun HeaderHome(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
     val isRandom by viewModel.isRandom.observeAsState(false)
     val randomIcon = painterResource(R.drawable.ic_random)
     val noRandomIcon = painterResource(R.drawable.ic_order_playlist)
-    val exitIcon = painterResource(R.drawable.ic_remove_x)
-    val optionIcon = painterResource(R.drawable.ic_option)
     Row(
         Modifier
             .fillMaxWidth()
@@ -65,25 +68,48 @@ fun HeaderHome(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
                 OrderMusics(isPlaylist)
             }
         } else {
-            IconButton(onClick = { interfaceViewModel.activatePressed(false) }) {
-                Icon(
-                    painter = exitIcon,
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(33.dp)
-                        .padding(start = 10.dp),
-                    contentDescription = "play"
+            HandleMusicsSelected(viewModel)
+        }
+    }
+}
+
+@Composable
+fun HandleMusicsSelected(viewModel: PlaybackViewModel) {
+    val exitIcon = painterResource(R.drawable.ic_remove_x)
+    val optionIcon = painterResource(R.drawable.ic_option)
+    var expanded by remember { mutableStateOf(false) }
+    var expandedOptions by remember { mutableStateOf(false) }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        IconButton(onClick = { interfaceViewModel.activatePressed(false) }) {
+            Icon(
+                painter = exitIcon,
+                tint = Color.White,
+                modifier = Modifier
+                    .size(33.dp)
+                    .padding(start = 10.dp),
+                contentDescription = "play"
+            )
+        }
+        Spacer(Modifier.width(10.dp))
+        Text("${interfaceViewModel.elementsSelected.size} Seleccionado", color = Color.White, fontFamily = FontFamily.SansSerif)
+    }
+
+    IconButton(onClick = { expanded = true }) {
+        Icon(
+            painter = optionIcon,
+            tint = Color.White,
+            modifier = Modifier
+                .size(33.dp)
+                .padding(start = 10.dp),
+            contentDescription = "options"
+        )
+        Box() {
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                DropdownMenuItem(
+                    text = { Text("Agregar a playlist", fontFamily = FontFamily.SansSerif) },
+                    onClick = { expandedOptions = true }
                 )
-            }
-            IconButton(onClick = { }) {
-                Icon(
-                    painter = optionIcon,
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(33.dp)
-                        .padding(start = 10.dp),
-                    contentDescription = "play"
-                )
+                if (expandedOptions) OptionMusic(interfaceViewModel.elementsSelected)
             }
         }
     }

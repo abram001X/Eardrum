@@ -35,6 +35,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luffy001.eardrum.R
+import com.luffy001.eardrum.lib.AudioFile
+import com.luffy001.eardrum.lib.interfaceViewModel
 import com.luffy001.eardrum.lib.musicPlaylist
 import com.luffy001.eardrum.lib.playlistController
 import com.luffy001.eardrum.screens.Screens
@@ -129,12 +131,15 @@ fun OptionsPlaylist(namePlaylist: String, newName: String) {
 }
 
 @Composable
-fun PlaylistSelect(contentUri: Uri, musicName: String) {
+fun PlaylistSelect(listAudio: List<AudioFile>) {
     Spacer(Modifier.height(20.dp))
     LazyColumn(Modifier.fillMaxSize()) {
         items(playlistController.playlistsModel) { name ->
             val onCLick =
-                { musicPlaylist.addMusicToPlaylist(name, contentUri, musicName) }
+                {
+                    musicPlaylist.addMusicToPlaylist(name, listAudio)
+                    interfaceViewModel.activatePressed(false)
+                }
             Row(
                 Modifier
                     .fillMaxWidth()

@@ -100,7 +100,7 @@ fun MenuMusicPlaylist(isPlaylist: Boolean, audio: AudioFile, namePlaylist: Strin
                 )
 
             }
-            if (expandedOptions) OptionMusic(audio)
+            if (expandedOptions) OptionMusic(listOf(audio))
         }
     }
 }

@@ -11,7 +11,7 @@ class InterfaceViewModel : ViewModel() {
         private set
     var elementsSelected by mutableStateOf<List<AudioFile>>(emptyList())
         private set
-    private val listElements = mutableListOf<AudioFile>()
+    private var listElements = mutableListOf<AudioFile>()
     fun setElementsSelected(element: AudioFile) {
         listElements.add(element)
         elementsSelected = listElements
@@ -20,6 +20,17 @@ class InterfaceViewModel : ViewModel() {
 
     fun activatePressed(isPressed: Boolean = true) {
         isPress = isPressed
+        if (!isPressed) {
+            listElements = mutableListOf<AudioFile>()
+            elementsSelected = mutableListOf<AudioFile>()
+        }
+    }
+
+    fun removeMusicSelect(audioFile: AudioFile) {
+        listElements.remove(audioFile)
+        elementsSelected = listElements
+        if (listElements.isEmpty()) activatePressed(false)
+        Log.i("list", elementsSelected.toString())
     }
 }
 
