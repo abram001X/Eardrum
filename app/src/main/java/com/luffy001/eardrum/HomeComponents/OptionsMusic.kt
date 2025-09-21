@@ -45,12 +45,12 @@ import com.luffy001.eardrum.service.PlaybackViewModel
 
 @Composable
 fun ChildBoxData(
-    audio: AudioFile, isPlaylist: Boolean, namePlaylist: String? = null
+    viewModel: PlaybackViewModel, audio: AudioFile, isPlaylist: Boolean, namePlaylist: String? = null
 ) {
     Row(
         modifier = Modifier.padding(horizontal = 5.dp)
     ) {
-        ContentBoxData(audio, isPlaylist, namePlaylist)
+        ContentBoxData(viewModel, audio, isPlaylist, namePlaylist)
     }
 }
 
@@ -112,12 +112,12 @@ fun BoxData(
     Box(
         modifier = modifier
     ) {
-        ChildBoxData(audio, isPlaylist, namePlaylist)
+        ChildBoxData(viewModel,audio, isPlaylist, namePlaylist)
     }
 }
 
 @Composable
-fun ContentBoxData(audio: AudioFile, isPlaylist: Boolean, namePlaylist: String? = null) {
+fun ContentBoxData(viewModel: PlaybackViewModel, audio: AudioFile, isPlaylist: Boolean, namePlaylist: String? = null) {
     val image = imageFromPath(audio.contentUri)
     val totalWidth = LocalConfiguration.current.screenWidthDp.dp
     val painter = painterResource(R.drawable.ic_logosimple)
@@ -167,7 +167,7 @@ fun ContentBoxData(audio: AudioFile, isPlaylist: Boolean, namePlaylist: String? 
             fontWeight = FontWeight.Medium
         )
     }
-    if (!interfaceViewModel.isPress) MenuMusicPlaylist(isPlaylist, audio, namePlaylist)
+    if (!interfaceViewModel.isPress) MenuMusicPlaylist(viewModel,isPlaylist, audio, namePlaylist)
 }
 
 @Composable

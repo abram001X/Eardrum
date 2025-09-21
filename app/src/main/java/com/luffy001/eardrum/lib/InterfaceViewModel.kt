@@ -2,6 +2,7 @@ package com.luffy001.eardrum.lib
 
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -12,10 +13,14 @@ class InterfaceViewModel : ViewModel() {
     var elementsSelected by mutableStateOf<List<AudioFile>>(emptyList())
         private set
     private var listElements = mutableListOf<AudioFile>()
+
+    var countElements by mutableIntStateOf(0)
+        private set
+
     fun setElementsSelected(element: AudioFile) {
         listElements.add(element)
         elementsSelected = listElements
-        Log.i("list", elementsSelected.toString())
+        countElements = elementsSelected.size
     }
 
     fun activatePressed(isPressed: Boolean = true) {
@@ -23,6 +28,7 @@ class InterfaceViewModel : ViewModel() {
         if (!isPressed) {
             listElements = mutableListOf<AudioFile>()
             elementsSelected = mutableListOf<AudioFile>()
+            countElements = elementsSelected.size
         }
     }
 
@@ -30,7 +36,7 @@ class InterfaceViewModel : ViewModel() {
         listElements.remove(audioFile)
         elementsSelected = listElements
         if (listElements.isEmpty()) activatePressed(false)
-        Log.i("list", elementsSelected.toString())
+        countElements = elementsSelected.size
     }
 }
 

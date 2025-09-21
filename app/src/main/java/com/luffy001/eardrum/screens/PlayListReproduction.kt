@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.luffy001.eardrum.HomeComponents.BoxData
+import com.luffy001.eardrum.HomeComponents.HeaderHome
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.service.PlaybackViewModel
@@ -21,6 +22,7 @@ import com.luffy001.eardrum.service.PlaybackViewModel
 @Composable
 fun PlayListReproduction(viewModel: PlaybackViewModel) {
     val playlist by viewModel.playList.observeAsState(emptyList<AudioFile>())
+    HeaderHome(viewModel, false, isReproduction = true)
     LazyColumn(Modifier.fillMaxSize()) {
         items(playlist) { audio ->
             BoxData(viewModel, audio) {

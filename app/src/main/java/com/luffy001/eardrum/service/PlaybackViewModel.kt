@@ -67,6 +67,17 @@ class PlaybackViewModel : ViewModel() {
         _indexItem.postValue(indexItem)
     }
 
+    fun addMediaToPlaylist(listAudio: List<AudioFile>) {
+        val listAdd = mutableListOf<AudioFile>()
+        if (_playList.value !== null) {
+            listAdd.addAll(_playList.value?: emptyList())
+            listAdd.addAll(listAudio)
+            _playList.postValue(listAdd)
+        }
+        val listMediaUri = listAudio.map { it -> MediaItem.fromUri(it.contentUri) }
+        controller.addMediaItems(listMediaUri)
+    }
+
     fun prepareMedia() {
         val listUri = _playList.value?.let { it.map { it -> MediaItem.fromUri(it.contentUri) } }
         try {
@@ -129,5 +140,6 @@ class PlaybackViewModel : ViewModel() {
         super.onCleared()
         controller.release()
     }
+
 }
 

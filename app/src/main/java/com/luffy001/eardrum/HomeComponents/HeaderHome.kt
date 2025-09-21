@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.audioFiles
+import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.lib.interfaceViewModel
 import com.luffy001.eardrum.lib.musicPlaylist
 import com.luffy001.eardrum.lib.uiModel
@@ -39,18 +40,23 @@ import kotlin.math.exp
 import kotlin.random.Random
 
 @Composable
-fun HeaderHome(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
+fun HeaderHome(
+    viewModel: PlaybackViewModel,
+    isPlaylist: Boolean,
+    isReproduction: Boolean? = false
+) {
     val isRandom by viewModel.isRandom.observeAsState(false)
     val randomIcon = painterResource(R.drawable.ic_random)
     val noRandomIcon = painterResource(R.drawable.ic_order_playlist)
-    Row(
+    if ((isReproduction == true && interfaceViewModel.isPress) || isReproduction == false) Row(
         Modifier
             .fillMaxWidth()
             .height(40.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        if (!interfaceViewModel.isPress) {
-
+        if (interfaceViewModel.isPress) {
+            HandleMusicsSelected(viewModel)
+        } else {
             Row {
                 PlayHome(viewModel, isPlaylist)
                 IconButton(onClick = { viewModel.activeRandomMode() }) {
@@ -67,8 +73,6 @@ fun HeaderHome(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
             Box {
                 OrderMusics(isPlaylist)
             }
-        } else {
-            HandleMusicsSelected(viewModel)
         }
     }
 }
@@ -79,6 +83,8 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel) {
     val optionIcon = painterResource(R.drawable.ic_option)
     var expanded by remember { mutableStateOf(false) }
     var expandedOptions by remember { mutableStateOf(false) }
+    val playlist by viewModel.playList.observeAsState(emptyList<AudioFile>())
+
     Row(verticalAlignment = Alignment.CenterVertically) {
         IconButton(onClick = { interfaceViewModel.activatePressed(false) }) {
             Icon(
@@ -91,7 +97,11 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel) {
             )
         }
         Spacer(Modifier.width(10.dp))
-        Text("${interfaceViewModel.elementsSelected.size} Seleccionado", color = Color.White, fontFamily = FontFamily.SansSerif)
+        Text(
+            "${interfaceViewModel.countElements} Seleccionado",
+            color = Color.White,
+            fontFamily = FontFamily.SansSerif
+        )
     }
 
     IconButton(onClick = { expanded = true }) {
@@ -108,6 +118,22 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel) {
                 DropdownMenuItem(
                     text = { Text("Agregar a playlist", fontFamily = FontFamily.SansSerif) },
                     onClick = { expandedOptions = true }
+                )
+                DropdownMenuItem(
+                    text = { Text("Reproduciir", fontFamily = FontFamily.SansSerif) },
+                    onClick = {
+                        viewModel.setPlaylist(interfaceViewModel.elementsSelected, 0)
+                        interfaceViewModel.activatePressed(false)
+                        navController.navigate(Screens.PlayerScreen.route + "/true")
+                    }
+                )
+                if(playlist.isNotEmpty())DropdownMenuItem(
+                    text = { Text("Agregar a reproducción", fontFamily = FontFamily.SansSerif) },
+                    onClick = {
+                        viewModel.addMediaToPlaylist(interfaceViewModel.elementsSelected)
+                        interfaceViewModel.activatePressed(false)
+                        expanded = false
+                    }
                 )
                 if (expandedOptions) OptionMusic(interfaceViewModel.elementsSelected)
             }

@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -31,6 +32,7 @@ import com.luffy001.eardrum.HomeComponents.HeaderHome
 import com.luffy001.eardrum.HomeComponents.OptionMusic
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
+import com.luffy001.eardrum.lib.interfaceViewModel
 import com.luffy001.eardrum.lib.musicPlaylist
 import com.luffy001.eardrum.service.PlaybackViewModel
 
@@ -68,10 +70,12 @@ fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
 
 
 @Composable
-fun MenuMusicPlaylist(isPlaylist: Boolean, audio: AudioFile, namePlaylist: String? = null) {
+fun MenuMusicPlaylist(viewModel: PlaybackViewModel,isPlaylist: Boolean, audio: AudioFile, namePlaylist: String? = null) {
     var expanded by remember { mutableStateOf(false) }
     var expandedOptions by remember { mutableStateOf(false) }
     val optionIcon = painterResource(R.drawable.ic_option)
+    val playlist by viewModel.playList.observeAsState(emptyList<AudioFile>())
+
     Box(
     ) {
 
@@ -87,6 +91,13 @@ fun MenuMusicPlaylist(isPlaylist: Boolean, audio: AudioFile, namePlaylist: Strin
             DropdownMenuItem(
                 text = { Text("Agregar a playlist", fontFamily = FontFamily.SansSerif) },
                 onClick = { expandedOptions = true }
+            )
+            if(playlist.isNotEmpty())DropdownMenuItem(
+                text = { Text("Agregar a reproducción", fontFamily = FontFamily.SansSerif) },
+                onClick = {
+                    viewModel.addMediaToPlaylist(listOf(audio))
+                    expanded = false
+                }
             )
             if (isPlaylist) {
                 DropdownMenuItem(
