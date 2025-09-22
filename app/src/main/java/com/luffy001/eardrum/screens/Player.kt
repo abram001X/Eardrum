@@ -43,8 +43,7 @@ import com.luffy001.eardrum.PlayerComponents.VisPosition
 import com.luffy001.eardrum.lib.imageFromPath
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
-import com.luffy001.eardrum.lib.interfaceViewModel
-import com.luffy001.eardrum.lib.uiModel
+import com.luffy001.eardrum.ViewModels.uiModel
 import com.luffy001.eardrum.service.PlaybackViewModel
 
 @Composable

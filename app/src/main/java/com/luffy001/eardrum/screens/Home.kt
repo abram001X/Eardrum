@@ -33,7 +33,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
@@ -46,11 +45,9 @@ import com.luffy001.eardrum.HomeComponents.HeaderHome
 import com.luffy001.eardrum.Pages.InitDownloadPage
 import com.luffy001.eardrum.Pages.InitPlayListsPage
 import com.luffy001.eardrum.Pages.SessionsPages
-import com.luffy001.eardrum.lib.AudioFile
-import com.luffy001.eardrum.lib.HandleMusicPlaylist
-import com.luffy001.eardrum.lib.interfaceViewModel
-import com.luffy001.eardrum.lib.musicPlaylist
-import com.luffy001.eardrum.lib.uiModel
+import com.luffy001.eardrum.ViewModels.interfaceViewModel
+import com.luffy001.eardrum.ViewModels.musicPlaylist
+import com.luffy001.eardrum.ViewModels.uiModel
 import com.luffy001.eardrum.service.PlaybackViewModel
 
 lateinit var navController: NavController

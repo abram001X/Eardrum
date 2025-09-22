@@ -35,9 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
-import com.luffy001.eardrum.lib.interfaceViewModel
-import com.luffy001.eardrum.lib.musicPlaylist
-import com.luffy001.eardrum.lib.playlistController
+import com.luffy001.eardrum.ViewModels.interfaceViewModel
+import com.luffy001.eardrum.ViewModels.musicPlaylist
+import com.luffy001.eardrum.ViewModels.playlistController
 import com.luffy001.eardrum.screens.Screens
 import com.luffy001.eardrum.screens.navController
 

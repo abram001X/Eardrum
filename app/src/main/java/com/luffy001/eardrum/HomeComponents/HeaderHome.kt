@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -30,13 +29,12 @@ import androidx.compose.ui.unit.dp
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.audioFiles
 import com.luffy001.eardrum.lib.AudioFile
-import com.luffy001.eardrum.lib.interfaceViewModel
-import com.luffy001.eardrum.lib.musicPlaylist
-import com.luffy001.eardrum.lib.uiModel
+import com.luffy001.eardrum.ViewModels.interfaceViewModel
+import com.luffy001.eardrum.ViewModels.musicPlaylist
+import com.luffy001.eardrum.ViewModels.uiModel
 import com.luffy001.eardrum.screens.Screens
 import com.luffy001.eardrum.screens.navController
 import com.luffy001.eardrum.service.PlaybackViewModel
-import kotlin.math.exp
 import kotlin.random.Random
 
 @Composable

@@ -1,4 +1,4 @@
-package com.luffy001.eardrum.lib
+package com.luffy001.eardrum.ViewModels
 
 import android.media.MediaMetadataRetriever
 import android.net.Uri
@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.luffy001.eardrum.MyApplication
+import com.luffy001.eardrum.lib.AudioFile
 import java.io.File
 import java.io.FileOutputStream
 

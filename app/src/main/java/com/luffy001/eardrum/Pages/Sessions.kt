@@ -1,6 +1,5 @@
 package com.luffy001.eardrum.Pages
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -20,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.luffy001.eardrum.lib.interfaceViewModel
+import com.luffy001.eardrum.ViewModels.interfaceViewModel
 import kotlinx.coroutines.launch
 
 @Composable

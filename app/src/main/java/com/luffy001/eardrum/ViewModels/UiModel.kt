@@ -1,13 +1,13 @@
-package com.luffy001.eardrum.lib
+package com.luffy001.eardrum.ViewModels
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.luffy001.eardrum.MyApplication
+import com.luffy001.eardrum.lib.AudioFile
 import kotlin.collections.mutableListOf
 
-class UiModel() : ViewModel() {
+class UiModel: ViewModel() {
     var musicsList by mutableStateOf(mutableListOf<AudioFile>())
         private set
 

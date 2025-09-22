@@ -1,4 +1,4 @@
-package com.luffy001.eardrum.lib
+package com.luffy001.eardrum.ViewModels
 
 import android.util.Log
 import androidx.compose.runtime.getValue

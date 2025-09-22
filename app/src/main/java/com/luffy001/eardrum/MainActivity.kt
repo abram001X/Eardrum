@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.media3.session.SessionToken
 import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.lib.loadFilesAudio
-import com.luffy001.eardrum.lib.uiModel
+import com.luffy001.eardrum.ViewModels.uiModel
 import com.luffy001.eardrum.navigation.AppNavigation
 import com.luffy001.eardrum.service.PlaybackService
 import com.luffy001.eardrum.service.PlaybackViewModel

@@ -1,6 +1,5 @@
 package com.luffy001.eardrum.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,8 +31,7 @@ import com.luffy001.eardrum.HomeComponents.HeaderHome
 import com.luffy001.eardrum.HomeComponents.OptionMusic
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
-import com.luffy001.eardrum.lib.interfaceViewModel
-import com.luffy001.eardrum.lib.musicPlaylist
+import com.luffy001.eardrum.ViewModels.musicPlaylist
 import com.luffy001.eardrum.service.PlaybackViewModel
 
 @Composable
