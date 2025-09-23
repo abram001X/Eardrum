@@ -3,6 +3,7 @@ package com.luffy001.eardrum.HomeComponents
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -53,7 +54,8 @@ fun ChildBoxData(
     namePlaylist: String? = null
 ) {
     Row(
-        modifier = Modifier.padding(horizontal = 5.dp)
+        modifier = Modifier.padding(horizontal = 5.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         ContentBoxData(viewModel, audio, isPlaylist, namePlaylist)
     }
@@ -75,18 +77,21 @@ fun BoxData(
     LaunchedEffect(interfaceViewModel.isPress) {
         if (!interfaceViewModel.isPress) isSelected = false
     }
-    LaunchedEffect(interfaceViewModel.elementsSelected) {
+    LaunchedEffect(
+        interfaceViewModel.elementsSelected,
+        if (!isPlaylist) uiModel.musicsList else musicPlaylist.listMusicsModel
+    ) {
         isSelected = (interfaceViewModel.elementsSelected.contains(audio))
     }
     LaunchedEffect(
         isSelected,
-        if (!isPlaylist) uiModel.musicsList else musicPlaylist.listMusicsModel
+        if (!isPlaylist) uiModel.musicsList else musicPlaylist.listMusicsModel, audioPlaying
     ) {
         colorBackground =
             if (isSelected) {
                 Color.LightGray.copy(alpha = 0.5f)
             } else if (audio.contentUri == (audioPlaying?.contentUri ?: "")) {
-                Color.Black.copy(alpha = 0.5f)
+                Color.Yellow.copy(alpha = 0.7f)
             } else Color.Transparent
         selectOrNavigate = {
             if (isSelected) {
@@ -97,7 +102,9 @@ fun BoxData(
                     audio
                 )
                 isSelected = true
-            } else onClick()
+            } else {
+                onClick()
+            }
         }
         selectMusic = {
             if (isSelected) {
@@ -115,14 +122,15 @@ fun BoxData(
         .height(70.dp)
         .combinedClickable(onClick = {
             selectOrNavigate()
+
         }, onLongClick = { selectMusic() })
         .background(colorBackground)
-    Spacer(Modifier.height(10.dp))
     Box(
         modifier = modifier
     ) {
         ChildBoxData(viewModel, audio, isPlaylist, namePlaylist)
     }
+    Spacer(Modifier.height(10.dp))
 }
 
 @Composable
@@ -138,7 +146,8 @@ fun ContentBoxData(
     Box(
         Modifier
             .width(70.dp)
-            .height(70.dp)
+            .height(50.dp),
+        contentAlignment = Alignment.Center,
     ) {
         if (image !== null) {
             Image(
@@ -162,7 +171,8 @@ fun ContentBoxData(
         Modifier
             .fillMaxHeight()
             .width(totalWidth * 0.7f)
-            .padding(start = 15.dp)
+            .padding(start = 15.dp),
+        verticalArrangement = Arrangement.Center
     ) {
         Text(
             audio.name,

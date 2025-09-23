@@ -112,12 +112,15 @@ class HandleMusicPlaylist() : ViewModel() {
     }
 
     fun searchMusicByName(nameMusic: String) {
-        if (nameMusic.trimEnd() == "") {
-            listMusicsModel = listAudioMedia.toMutableList()
+        if (this::listAudioMedia.isInitialized) {
+
+            if (nameMusic.trimEnd() == "") {
+                listMusicsModel = listAudioMedia.toMutableList()
+            }
+            val listSearch =
+                listAudioMedia.filter { it -> it.name.lowercase().contains(nameMusic.lowercase()) }
+            listMusicsModel = listSearch.toMutableList()
         }
-        val listSearch =
-            listAudioMedia.filter { it -> it.name.lowercase().contains(nameMusic.lowercase()) }
-        listMusicsModel = listSearch.toMutableList()
     }
 }
 

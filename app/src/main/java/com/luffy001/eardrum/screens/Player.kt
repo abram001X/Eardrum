@@ -42,6 +42,7 @@ import com.luffy001.eardrum.PlayerComponents.SliderM3
 import com.luffy001.eardrum.PlayerComponents.VisPosition
 import com.luffy001.eardrum.lib.imageFromPath
 import com.luffy001.eardrum.R
+import com.luffy001.eardrum.ViewModels.musicPlaylist
 import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.ViewModels.uiModel
 import com.luffy001.eardrum.service.PlaybackViewModel
@@ -49,6 +50,8 @@ import com.luffy001.eardrum.service.PlaybackViewModel
 @Composable
 fun InitPlayerApp(viewModel: PlaybackViewModel, isPrepared: Boolean = false) {
     LaunchedEffect(key1 = true) {
+        musicPlaylist.searchMusicByName("")
+        uiModel.searchMusicByName("")
         if (isPrepared) {
             viewModel.prepareMedia()
         }

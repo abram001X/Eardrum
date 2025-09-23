@@ -1,7 +1,5 @@
 package com.luffy001.eardrum.screens
-
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -37,7 +35,6 @@ import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.ViewModels.musicPlaylist
 import com.luffy001.eardrum.service.PlaybackViewModel
-
 @Composable
 fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
     val audioPlaying by viewModel.audioPlaying.observeAsState(null)
@@ -128,7 +125,6 @@ fun MenuMusicPlaylist(
                         )
                     }
                 )
-
             }
             if (expandedOptions) OptionMusic(listOf(audio))
         }

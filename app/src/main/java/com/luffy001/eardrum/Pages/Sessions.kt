@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SessionsPages(pager: PagerState) {
-
     Row(
         Modifier
             .fillMaxWidth()
@@ -45,18 +44,18 @@ fun BoxSession(session: Int, isSession: Boolean, pagerState: PagerState) {
             .width(totalWidth * 0.33f)
             .fillMaxHeight()
             .clickable(onClick = {
-                if(!interfaceViewModel.isPress) coroutine.launch { pagerState.scrollToPage(session) }
+                if (!interfaceViewModel.isPress) coroutine.launch { pagerState.scrollToPage(session) }
             })
     } else {
         Modifier
             .width(totalWidth * 0.33f)
             .fillMaxHeight()
             .clickable(onClick = {
-                if(!interfaceViewModel.isPress) coroutine.launch { pagerState.scrollToPage(session) }
+                if (!interfaceViewModel.isPress) coroutine.launch { pagerState.scrollToPage(session) }
             })
             .drawBehind {
                 drawLine(
-                    color = Color.White,
+                    color = Color.Yellow,
                     start = Offset(0f, size.height),
                     end = Offset(size.width, size.height),
                     strokeWidth = 2.dp.toPx()
@@ -64,7 +63,7 @@ fun BoxSession(session: Int, isSession: Boolean, pagerState: PagerState) {
             }
     }
     val content = Alignment.Center
-    val colorCurrent = Color.White
+    val colorCurrent = if (!isSession) Color.White else Color.Yellow
     val sessionString = listOf("Canciones", "Playlists", "Descargar")
 
 

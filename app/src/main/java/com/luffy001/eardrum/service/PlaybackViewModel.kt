@@ -106,7 +106,6 @@ class   PlaybackViewModel : ViewModel() {
         if (isNext) controller.seekToNext()
         else controller.seekToPrevious()
         _playList.value?.let { it -> _audioPlaying.postValue(it[controller.currentMediaItemIndex]) }
-
     }
 
     fun runAudio() {

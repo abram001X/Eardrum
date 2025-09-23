@@ -2,6 +2,7 @@ package com.luffy001.eardrum.HomeComponents
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,12 +15,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -27,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import com.luffy001.eardrum.PlayerComponents.msToTime
 import com.luffy001.eardrum.R
+import com.luffy001.eardrum.ViewModels.musicPlaylist
+import com.luffy001.eardrum.ViewModels.uiModel
 import com.luffy001.eardrum.lib.imageFromPath
 import com.luffy001.eardrum.screens.Screens
 import com.luffy001.eardrum.screens.navController
@@ -41,9 +49,16 @@ fun BoxPlayingMusic(viewModel: PlaybackViewModel) {
             Modifier
                 .fillMaxWidth()
                 .height(totalHeight)
-                .background(Color.White)
+                .background(Color.Black)
                 .padding(horizontal = 10.dp)
-        ) {
+                .drawBehind {
+                    drawLine(
+                        color = Color.Yellow,
+                        start = Offset(x = 0f, y = 0f),
+                        end = Offset(x = size.width, y = 0f),
+                        strokeWidth = 2.dp.toPx()
+                    )
+                }) {
             MusicSoundHome(viewModel) {
                 navController.navigate(Screens.PlayerScreen.route + "/false")
             }
@@ -56,6 +71,7 @@ fun MusicSoundHome(viewModel: PlaybackViewModel, onClick: () -> Unit) {
     val audio by viewModel.audioPlaying.observeAsState(null)
     val image = imageFromPath(audio?.contentUri)
     val painter = painterResource(R.drawable.ic_logosimple)
+    val modifier = Modifier.width(70.dp).height(50.dp).clip(RoundedCornerShape(5.dp))
     Row(
         Modifier
             .fillMaxWidth()
@@ -73,16 +89,15 @@ fun MusicSoundHome(viewModel: PlaybackViewModel, onClick: () -> Unit) {
                 Image(
                     bitmap = image,
                     contentDescription = audio?.name ?: "",
-                    modifier = Modifier.fillMaxSize()
+                    modifier = modifier,
                 )
-            } else Image(painter, audio?.name ?: "", Modifier.fillMaxSize())
+            } else Image(painter, audio?.name ?: "", modifier = modifier)
         }
         Column(
-            Modifier
-                .width(max(140.dp, 200.dp))
+            Modifier.width(max(140.dp, 200.dp))
         ) {
-            Text(audio?.name ?: "", color = Color.Black, maxLines = 1)
-            Text(msToTime(audio?.duration?.toLong() ?: 0L), color = Color.Black, maxLines = 1)
+            Text(audio?.name ?: "", color = Color.White, maxLines = 1)
+            Text(msToTime(audio?.duration?.toLong() ?: 0L), color = Color.White, maxLines = 1)
         }
         HandleMusicHome(viewModel)
     }
@@ -91,27 +106,25 @@ fun MusicSoundHome(viewModel: PlaybackViewModel, onClick: () -> Unit) {
 @Composable
 fun HandleMusicHome(viewModel: PlaybackViewModel) {
     val isPlaying by viewModel.isPlaying.observeAsState(false)
-    val tint = Color.Black
+    val tint = Color.White
     val playImage = painterResource(R.drawable.ic_play)
     val rightImage = painterResource(R.drawable.ic_next_arrow)
     val pauseImage = painterResource(R.drawable.ic_pause)
-    Icon(
-        painter = if (isPlaying) pauseImage else playImage,
-        contentDescription = "PauseOrPlay",
-        Modifier
-            .size(40.dp)
-            .clickable(onClick = {
-                viewModel.playAndStop()
-            }),
-        tint
-    )
-
-    Icon(
-        rightImage,
-        "Right",
-        modifier = Modifier
-            .size(40.dp)
-            .clickable(onClick = { viewModel.previousNextAudio(true) }),
-        tint
-    )
+    IconButton(onClick = {
+        viewModel.playAndStop()
+    }) {
+        Icon(
+            painter = if (isPlaying) pauseImage else playImage,
+            contentDescription = "PauseOrPlay",
+            Modifier.size(40.dp),
+            tint
+        )
+    }
+    IconButton(onClick = {
+        viewModel.previousNextAudio(true)
+    }) {
+        Icon(
+            rightImage, "Right", modifier = Modifier.size(40.dp), tint
+        )
+    }
 }

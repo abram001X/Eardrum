@@ -63,7 +63,7 @@ fun HeaderHome(
                         painter = if (isRandom) noRandomIcon else randomIcon,
                         tint = Color.White,
                         modifier = Modifier
-                            .size(30.dp)
+                            .size(35.dp)
                             .padding(start = 10.dp),
                         contentDescription = "play"
                     )
@@ -90,7 +90,7 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
                 painter = exitIcon,
                 tint = Color.White,
                 modifier = Modifier
-                    .size(33.dp)
+                    .size(35.dp)
                     .padding(start = 10.dp),
                 contentDescription = "play"
             )
