@@ -70,7 +70,7 @@ fun HeaderHome(
                 }
             }
             Box {
-                OrderMusics(isPlaylist)
+                OrderMusics(viewModel,isPlaylist)
             }
         }
     }
@@ -159,7 +159,7 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
 }
 
 @Composable
-fun OrderMusics(isPlaylist: Boolean) {
+fun OrderMusics(viewModel: PlaybackViewModel,isPlaylist: Boolean) {
     var expanded by remember { mutableStateOf(false) }
     val orderMusic = painterResource(R.drawable.ic_order)
     IconButton(onClick = { expanded = true }) {
@@ -177,7 +177,7 @@ fun OrderMusics(isPlaylist: Boolean) {
                 if (isPlaylist) {
                     musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.name })
                 } else {
-                    uiModel.setAudioList(audioFiles.sortedBy { it.name })
+                    uiModel.setAudioList(uiModel.musicsList.sortedBy { it.name })
                 }
             }
         )
@@ -185,9 +185,10 @@ fun OrderMusics(isPlaylist: Boolean) {
             text = { Text("Ordernar por fecha") },
             onClick = {
                 if (isPlaylist) {
-                    musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.date })
+                    musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.date }
+                        .reversed())
                 } else {
-                    uiModel.setAudioList(audioFiles.sortedBy { it.date })
+                    uiModel.setAudioList(uiModel.musicsList.sortedBy { it.date }.reversed())
                 }
             }
         )

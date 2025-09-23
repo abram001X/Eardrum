@@ -40,12 +40,17 @@ import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.lib.imageFromPath
 import com.luffy001.eardrum.ViewModels.interfaceViewModel
+import com.luffy001.eardrum.ViewModels.musicPlaylist
+import com.luffy001.eardrum.ViewModels.uiModel
 import com.luffy001.eardrum.screens.MenuMusicPlaylist
 import com.luffy001.eardrum.service.PlaybackViewModel
 
 @Composable
 fun ChildBoxData(
-    viewModel: PlaybackViewModel, audio: AudioFile, isPlaylist: Boolean, namePlaylist: String? = null
+    viewModel: PlaybackViewModel,
+    audio: AudioFile,
+    isPlaylist: Boolean,
+    namePlaylist: String? = null
 ) {
     Row(
         modifier = Modifier.padding(horizontal = 5.dp)
@@ -70,7 +75,13 @@ fun BoxData(
     LaunchedEffect(interfaceViewModel.isPress) {
         if (!interfaceViewModel.isPress) isSelected = false
     }
-    LaunchedEffect(isSelected) {
+    LaunchedEffect(interfaceViewModel.elementsSelected) {
+        isSelected = (interfaceViewModel.elementsSelected.contains(audio))
+    }
+    LaunchedEffect(
+        isSelected,
+        if (!isPlaylist) uiModel.musicsList else musicPlaylist.listMusicsModel
+    ) {
         colorBackground =
             if (isSelected) {
                 Color.LightGray.copy(alpha = 0.5f)
@@ -93,7 +104,6 @@ fun BoxData(
                 interfaceViewModel.removeMusicSelect(audio)
                 isSelected = false
             } else {
-
                 interfaceViewModel.setElementsSelected(audio)
                 interfaceViewModel.activatePressed(true)
                 isSelected = true
@@ -107,17 +117,21 @@ fun BoxData(
             selectOrNavigate()
         }, onLongClick = { selectMusic() })
         .background(colorBackground)
-
     Spacer(Modifier.height(10.dp))
     Box(
         modifier = modifier
     ) {
-        ChildBoxData(viewModel,audio, isPlaylist, namePlaylist)
+        ChildBoxData(viewModel, audio, isPlaylist, namePlaylist)
     }
 }
 
 @Composable
-fun ContentBoxData(viewModel: PlaybackViewModel, audio: AudioFile, isPlaylist: Boolean, namePlaylist: String? = null) {
+fun ContentBoxData(
+    viewModel: PlaybackViewModel,
+    audio: AudioFile,
+    isPlaylist: Boolean,
+    namePlaylist: String? = null
+) {
     val image = imageFromPath(audio.contentUri)
     val totalWidth = LocalConfiguration.current.screenWidthDp.dp
     val painter = painterResource(R.drawable.ic_logosimple)
@@ -167,7 +181,7 @@ fun ContentBoxData(viewModel: PlaybackViewModel, audio: AudioFile, isPlaylist: B
             fontWeight = FontWeight.Medium
         )
     }
-    if (!interfaceViewModel.isPress) MenuMusicPlaylist(viewModel,isPlaylist, audio, namePlaylist)
+    if (!interfaceViewModel.isPress) MenuMusicPlaylist(viewModel, isPlaylist, audio, namePlaylist)
 }
 
 @Composable

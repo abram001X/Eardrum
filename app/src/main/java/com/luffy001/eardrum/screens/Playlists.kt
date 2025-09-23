@@ -1,9 +1,12 @@
 package com.luffy001.eardrum.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -36,6 +40,10 @@ import com.luffy001.eardrum.service.PlaybackViewModel
 
 @Composable
 fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
+    val audioPlaying by viewModel.audioPlaying.observeAsState(null)
+    val totalHeight = LocalConfiguration.current.screenHeightDp.dp
+    val modifier =
+        if (audioPlaying !== null) Modifier.height(totalHeight * 0.79f) else Modifier.fillMaxHeight()
     musicPlaylist.getMusicsPlaylist(name)
     Scaffold(topBar = { TopBarSearch(isPlaylist = true) }) { innerPadding ->
         val image = painterResource(id = R.drawable.background)
@@ -47,16 +55,20 @@ fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
         )
         Column(
             Modifier
-                .padding(top = innerPadding.calculateTopPadding())
                 .fillMaxSize()
+                .padding(top = innerPadding.calculateTopPadding())
         ) {
-            HeaderHome(viewModel, true, isReproduction = false ,name)
-            LazyColumn(Modifier.fillMaxSize()) {
-                items(musicPlaylist.listMusicsModel) { audio ->
-                    BoxData(viewModel, audio, true, name) {
-                        val indexItem = musicPlaylist.listMusicsModel.indexOf(audio)
-                        viewModel.setPlaylist(musicPlaylist.listMusicsModel, indexItem)
-                        navController.navigate(Screens.PlayerScreen.route + "/true")
+            Column(
+                modifier
+            ) {
+                HeaderHome(viewModel, true, isReproduction = false, name)
+                LazyColumn(Modifier.fillMaxSize()) {
+                    items(musicPlaylist.listMusicsModel) { audio ->
+                        BoxData(viewModel, audio, true, name) {
+                            val indexItem = musicPlaylist.listMusicsModel.indexOf(audio)
+                            viewModel.setPlaylist(musicPlaylist.listMusicsModel, indexItem)
+                            navController.navigate(Screens.PlayerScreen.route + "/true")
+                        }
                     }
                 }
             }
@@ -67,7 +79,12 @@ fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
 
 
 @Composable
-fun MenuMusicPlaylist(viewModel: PlaybackViewModel,isPlaylist: Boolean, audio: AudioFile, namePlaylist: String? = null) {
+fun MenuMusicPlaylist(
+    viewModel: PlaybackViewModel,
+    isPlaylist: Boolean,
+    audio: AudioFile,
+    namePlaylist: String? = null
+) {
     var expanded by remember { mutableStateOf(false) }
     var expandedOptions by remember { mutableStateOf(false) }
     val optionIcon = painterResource(R.drawable.ic_option)
@@ -89,7 +106,7 @@ fun MenuMusicPlaylist(viewModel: PlaybackViewModel,isPlaylist: Boolean, audio: A
                 text = { Text("Agregar a playlist", fontFamily = FontFamily.SansSerif) },
                 onClick = { expandedOptions = true }
             )
-            if(playlist.isNotEmpty())DropdownMenuItem(
+            if (playlist.isNotEmpty()) DropdownMenuItem(
                 text = { Text("Agregar a reproducción", fontFamily = FontFamily.SansSerif) },
                 onClick = {
                     viewModel.addMediaToPlaylist(listOf(audio))
@@ -98,7 +115,12 @@ fun MenuMusicPlaylist(viewModel: PlaybackViewModel,isPlaylist: Boolean, audio: A
             )
             if (isPlaylist) {
                 DropdownMenuItem(
-                    text = { Text("Eliminar musica de playlist",fontFamily = FontFamily.SansSerif) },
+                    text = {
+                        Text(
+                            "Eliminar musica de playlist",
+                            fontFamily = FontFamily.SansSerif
+                        )
+                    },
                     onClick = {
                         musicPlaylist.removeMusicFromPlaylists(
                             namePlaylist ?: "",

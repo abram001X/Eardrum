@@ -23,6 +23,7 @@ import com.luffy001.eardrum.service.PlaybackViewModel
 import com.luffy001.eardrum.ui.theme.EardrumTheme
 
 lateinit var audioFiles: MutableList<AudioFile>
+
 class MainActivity : ComponentActivity() {
     private val REQUEST_CODE_AUDIO = 100
     private val viewModel: PlaybackViewModel by viewModels()
@@ -40,8 +41,8 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    private fun checkAudioPermission() {
 
+    private fun checkAudioPermission() {
         if (!ContextCompat.checkSelfPermission(
                 this, Manifest.permission.READ_MEDIA_AUDIO
             ).equals(PackageManager.PERMISSION_GRANTED)
@@ -58,6 +59,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String?>, grantResults: IntArray, deviceId: Int
     ) {

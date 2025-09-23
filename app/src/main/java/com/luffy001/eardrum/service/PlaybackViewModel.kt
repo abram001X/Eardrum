@@ -18,7 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.collections.forEach
 
-class PlaybackViewModel : ViewModel() {
+class   PlaybackViewModel : ViewModel() {
     private lateinit var controller: MediaController
 
     private val _indexItem = MutableLiveData(0)
@@ -61,7 +61,6 @@ class PlaybackViewModel : ViewModel() {
         }
 
     }
-
     fun setPlaylist(listAudio: List<AudioFile>, indexItem: Int) {
         _playList.postValue(listAudio)
         _indexItem.postValue(indexItem)
