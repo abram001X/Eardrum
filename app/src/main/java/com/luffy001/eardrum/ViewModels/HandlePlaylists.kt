@@ -33,9 +33,8 @@ class HandlePlaylists() : ViewModel() {
             val internalPlaylists = File(playlists.absolutePath, name)
             if (!internalPlaylists.exists()) {
                 internalPlaylists.mkdir()
+                getPlaylists()
             } else message = "Nombre ya utilizado"
-            Log.i("play", internalPlaylists.toString())
-
         } catch (e: Exception) {
             Log.i("play", e.message.toString())
         }
@@ -50,7 +49,7 @@ class HandlePlaylists() : ViewModel() {
                 }
             }
             folderToDelete.delete()
-            Log.i("play", "$namePlaylist, borrado")
+            getPlaylists()
         } catch (e: Exception) {
             Log.i("play", "Error: ${e.message}")
         }
@@ -60,9 +59,11 @@ class HandlePlaylists() : ViewModel() {
             val newFolder = File(playlists.absolutePath, newNamePlaylist)
             val playlist = File(playlists.absolutePath, namePlaylist)
             playlist.renameTo(newFolder)
+            getPlaylists()
         } catch (e: Exception) {
             Log.i("error", "Error: ${e.message}")
         }
     }
+
 }
 var playlistController by mutableStateOf(HandlePlaylists())

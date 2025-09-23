@@ -175,7 +175,7 @@ fun TopBarSearch(isPlaylist: Boolean) {
                                 .height(40.dp)
                                 .background(Color.LightGray.copy(alpha = 0.4f))
                                 .padding(7.dp),
-                            textStyle = TextStyle(fontSize = 20.sp, color = Color.Black),
+                            textStyle = TextStyle(fontSize = 20.sp, color = Color.White),
                             maxLines = 1
                         )
 
