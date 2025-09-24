@@ -18,7 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.collections.forEach
 
-class   PlaybackViewModel : ViewModel() {
+class PlaybackViewModel : ViewModel() {
     private lateinit var controller: MediaController
 
     private val _indexItem = MutableLiveData(0)
@@ -35,6 +35,8 @@ class   PlaybackViewModel : ViewModel() {
     private val _currentPosition = MutableLiveData(0f)
     val currentPosition: LiveData<Float> = _currentPosition
 
+    private val _processAudio = MutableLiveData(0f)
+    val processAudio: LiveData<Float> = _processAudio
     private val _isRandom = MutableLiveData(false)
     val isRandom: LiveData<Boolean> = _isRandom
     fun init(sessionToken: SessionToken) {
@@ -61,6 +63,7 @@ class   PlaybackViewModel : ViewModel() {
         }
 
     }
+
     fun setPlaylist(listAudio: List<AudioFile>, indexItem: Int) {
         _playList.postValue(listAudio)
         _indexItem.postValue(indexItem)
@@ -69,7 +72,7 @@ class   PlaybackViewModel : ViewModel() {
     fun addMediaToPlaylist(listAudio: List<AudioFile>) {
         val listAdd = mutableListOf<AudioFile>()
         if (_playList.value !== null) {
-            listAdd.addAll(_playList.value?: emptyList())
+            listAdd.addAll(_playList.value ?: emptyList())
             listAdd.addAll(listAudio)
             _playList.postValue(listAdd)
         }
@@ -112,7 +115,12 @@ class   PlaybackViewModel : ViewModel() {
         val job = CoroutineScope(Dispatchers.Main).launch {
             while (controller.isPlaying) {
                 _currentPosition.postValue(controller.currentPosition.toFloat())
+                val totalDuration = _audioPlaying.value?.duration?.toFloat() ?: 0f
+                _processAudio.postValue(controller.currentPosition / totalDuration)
+                //porcentaje de pantalla : process * totalWidth
+                //porcentaje de audio proces : (currentAudio / totalDuration )
                 delay(1000)
+
             }
         }
         if (!controller.isPlaying) job.cancel()

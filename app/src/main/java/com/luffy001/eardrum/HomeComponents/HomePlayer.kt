@@ -1,5 +1,6 @@
 package com.luffy001.eardrum.HomeComponents
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,8 +22,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -42,23 +48,41 @@ import com.luffy001.eardrum.service.PlaybackViewModel
 
 @Composable
 fun BoxPlayingMusic(viewModel: PlaybackViewModel) {
+    val isPlaying by viewModel.isPlaying.observeAsState(false)
+    val processAudio by viewModel.processAudio.observeAsState(0f)
     val audioPlaying by viewModel.audioPlaying.observeAsState(null)
+    var process by remember { mutableFloatStateOf(0f) }
+    val totalHeight = LocalConfiguration.current.screenHeightDp.dp * 0.18f
+    val totalWidth = LocalConfiguration.current.screenWidthDp
+    LaunchedEffect(isPlaying) {
+        if (isPlaying) viewModel.runAudio()
+    }
+    LaunchedEffect(processAudio) {
+        //porcentaje de pantalla : process * totalWidth
+        process = processAudio * totalWidth.toFloat()
+    }
     if (audioPlaying != null) {
-        val totalHeight = LocalConfiguration.current.screenHeightDp.dp * 0.18f
+        Row(Modifier.fillMaxWidth()) {
+            Spacer(
+                Modifier
+                    .width(process.dp)
+                    .height(2.dp)
+                    .background(Color.Yellow)
+            )
+            Spacer(
+                Modifier
+                    .width(totalWidth.dp - process.dp)
+                    .height(2.dp)
+                    .background(Color.LightGray.copy(alpha = 0.5f))
+            )
+        }
         Row(
             Modifier
                 .fillMaxWidth()
                 .height(totalHeight)
                 .background(Color.Black)
                 .padding(horizontal = 10.dp)
-                .drawBehind {
-                    drawLine(
-                        color = Color.Yellow,
-                        start = Offset(x = 0f, y = 0f),
-                        end = Offset(x = size.width, y = 0f),
-                        strokeWidth = 2.dp.toPx()
-                    )
-                }) {
+        ) {
             MusicSoundHome(viewModel) {
                 navController.navigate(Screens.PlayerScreen.route + "/false")
             }
@@ -71,7 +95,10 @@ fun MusicSoundHome(viewModel: PlaybackViewModel, onClick: () -> Unit) {
     val audio by viewModel.audioPlaying.observeAsState(null)
     val image = imageFromPath(audio?.contentUri)
     val painter = painterResource(R.drawable.ic_logosimple)
-    val modifier = Modifier.width(70.dp).height(50.dp).clip(RoundedCornerShape(5.dp))
+    val modifier = Modifier
+        .width(70.dp)
+        .height(50.dp)
+        .clip(RoundedCornerShape(5.dp))
     Row(
         Modifier
             .fillMaxWidth()

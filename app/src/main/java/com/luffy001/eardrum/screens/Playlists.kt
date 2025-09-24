@@ -1,5 +1,6 @@
 package com.luffy001.eardrum.screens
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -43,17 +44,11 @@ fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
         if (audioPlaying !== null) Modifier.height(totalHeight * 0.79f) else Modifier.fillMaxHeight()
     musicPlaylist.getMusicsPlaylist(name)
     Scaffold(topBar = { TopBarSearch(isPlaylist = true) }) { innerPadding ->
-        val image = painterResource(id = R.drawable.background)
-        Image(
-            painter = image, contentDescription = "Background",
-            modifier = Modifier
-                .padding(top = 23.dp)
-                .fillMaxSize()
-        )
         Column(
             Modifier
                 .fillMaxSize()
                 .padding(top = innerPadding.calculateTopPadding())
+                .background(Color.Black)
         ) {
             Column(
                 modifier

@@ -1,6 +1,7 @@
 package com.luffy001.eardrum.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -57,13 +59,6 @@ fun InitPlayerApp(viewModel: PlaybackViewModel, isPrepared: Boolean = false) {
         }
     }
     Scaffold(topBar = { TopBar2(Screens.HomeScreen.route, "Escuchando") }) { innerPadding ->
-        val image = painterResource(id = R.drawable.background)
-        Image(
-            painter = image, contentDescription = "Background",
-            modifier = Modifier
-                .padding(top = 23.dp)
-                .fillMaxSize()
-        )
         PlayerApp(innerPadding, viewModel)
     }
 }
@@ -72,14 +67,21 @@ fun InitPlayerApp(viewModel: PlaybackViewModel, isPrepared: Boolean = false) {
 @Composable
 fun TopBar2(navigation: String, title: String) {
     val arrowBack = painterResource(R.drawable.ic_arrow_back)
-    TopAppBar(title = {
-        Icon(
-            painter = arrowBack, contentDescription = "back", Modifier.clickable(onClick = {
+    TopAppBar(
+        title = {
+            IconButton(onClick = {
                 navController.navigate(navigation)
-            })
+            }) {
+                Icon(
+                    painter = arrowBack, contentDescription = "back",
+                    tint = Color.White
+                )
+            }
+            Text(text = title, Modifier.padding(start = 30.dp), color = Color.White)
+        }, colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Black,
         )
-        Text(text = title, Modifier.padding(start = 30.dp))
-    })
+    )
 }
 
 @Composable
@@ -139,7 +141,8 @@ fun PlayerApp(padding: PaddingValues, viewModel: PlaybackViewModel) {
     Column(
         Modifier
             .fillMaxSize()
-            .padding(top = padding.calculateTopPadding()),
+            .padding(top = padding.calculateTopPadding())
+            .background(color = Color.Black),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

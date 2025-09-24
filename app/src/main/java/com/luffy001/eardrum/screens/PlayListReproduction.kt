@@ -1,6 +1,7 @@
 package com.luffy001.eardrum.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.luffy001.eardrum.HomeComponents.BoxData
@@ -43,17 +45,11 @@ fun InitPlayListReproduction(viewModel: PlaybackViewModel) {
             "Siguiente a reproducir"
         )
     }) { innerPadding ->
-        val image = painterResource(id = R.drawable.background)
-        Image(
-            painter = image, contentDescription = "Background",
-            modifier = Modifier
-                .padding(top = 23.dp)
-                .fillMaxSize()
-        )
         Column(
             Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
+                .background(Color.Black)
         ) {
             PlayListReproduction(viewModel)
         }

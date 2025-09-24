@@ -74,7 +74,7 @@ fun SliderM3(viewModel: PlaybackViewModel) {
     val audioPlaying by viewModel.audioPlaying.observeAsState(null)
     var duration by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(isPlaying) {
-        viewModel.runAudio()
+        if (isPlaying) viewModel.runAudio()
     }
     LaunchedEffect(audioPlaying) {
         duration = audioPlaying?.duration?.toFloat() ?: 0f

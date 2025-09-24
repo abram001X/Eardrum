@@ -59,11 +59,11 @@ import java.io.File
 @Composable
 fun InitPlayListsPage() {
     playlistController.getPlaylists()
-    Column(Modifier.fillMaxSize()) {
+    Column(Modifier.fillMaxSize()
+        .padding(start = 10.dp)) {
         Row(
             Modifier
-                .fillMaxWidth()
-                .padding(start = 10.dp),
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
