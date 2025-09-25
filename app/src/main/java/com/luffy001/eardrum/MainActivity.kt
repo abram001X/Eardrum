@@ -7,14 +7,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.media3.session.SessionToken
-import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.lib.loadFilesAudio
 import com.luffy001.eardrum.ViewModels.uiModel
 import com.luffy001.eardrum.navigation.AppNavigation
@@ -22,7 +17,6 @@ import com.luffy001.eardrum.service.PlaybackService
 import com.luffy001.eardrum.service.PlaybackViewModel
 import com.luffy001.eardrum.ui.theme.EardrumTheme
 
-lateinit var audioFiles: MutableList<AudioFile>
 
 class MainActivity : ComponentActivity() {
     private val REQUEST_CODE_AUDIO = 100
@@ -47,16 +41,13 @@ class MainActivity : ComponentActivity() {
                 this, Manifest.permission.READ_MEDIA_AUDIO
             ).equals(PackageManager.PERMISSION_GRANTED)
         ) {
+            uiModel.setAudioList(loadFilesAudio(contentResolver))
+        } else {
             // el permiso no concedido
             ActivityCompat.requestPermissions(
                 this, arrayOf(Manifest.permission.READ_MEDIA_AUDIO), REQUEST_CODE_AUDIO
             )
-        } else {
-            audioFiles = uiModel.musicsList.ifEmpty {
-                loadFilesAudio(
-                    contentResolver
-                )
-            }
+            uiModel.setAudioList(mutableListOf())
         }
     }
 
@@ -67,20 +58,10 @@ class MainActivity : ComponentActivity() {
         if (requestCode == REQUEST_CODE_AUDIO) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //permiso concedido
-                audioFiles = uiModel.musicsList.ifEmpty {
-                    loadFilesAudio(
-                        contentResolver
-                    )
-                }
+                uiModel.setAudioList(loadFilesAudio(contentResolver))
             } else {
-                audioFiles = mutableListOf()
+                uiModel.setAudioList(mutableListOf())
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBar() {
-    TopAppBar(title = { Text(text = "Eardrum") })
 }

@@ -1,7 +1,7 @@
 package com.luffy001.eardrum.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,15 +25,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.luffy001.eardrum.R
-import com.luffy001.eardrum.audioFiles
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -41,8 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
@@ -52,12 +48,14 @@ import androidx.navigation.NavController
 import com.luffy001.eardrum.HomeComponents.BoxData
 import com.luffy001.eardrum.HomeComponents.BoxPlayingMusic
 import com.luffy001.eardrum.HomeComponents.HeaderHome
+import com.luffy001.eardrum.MyApplication
 import com.luffy001.eardrum.Pages.InitDownloadPage
 import com.luffy001.eardrum.Pages.InitPlayListsPage
 import com.luffy001.eardrum.Pages.SessionsPages
 import com.luffy001.eardrum.ViewModels.interfaceViewModel
 import com.luffy001.eardrum.ViewModels.musicPlaylist
 import com.luffy001.eardrum.ViewModels.uiModel
+import com.luffy001.eardrum.lib.loadFilesAudio
 import com.luffy001.eardrum.service.PlaybackViewModel
 
 lateinit var navController: NavController
@@ -74,6 +72,7 @@ fun Component(viewModel: PlaybackViewModel) {
     val totalHeight = LocalConfiguration.current.screenHeightDp.dp
     val modifier =
         if (audioPlaying != null) Modifier.height(totalHeight * 0.79f) else Modifier.fillMaxHeight()
+
     Column(modifier) {
         SessionsPages(pagerState)
         HorizontalPager(
@@ -89,9 +88,6 @@ fun Component(viewModel: PlaybackViewModel) {
 
 @Composable
 fun ListMusic(viewModel: PlaybackViewModel) {
-    LaunchedEffect(audioFiles) {
-        uiModel.setAudioList(audioFiles)
-    }
     Column(Modifier.fillMaxSize()) {
         Spacer(Modifier.height(7.dp))
         HeaderHome(viewModel, false)
@@ -132,11 +128,7 @@ fun TopBarSearch(isPlaylist: Boolean) {
     val totalWidth = LocalConfiguration.current.screenWidthDp.dp
     Box(
         modifier = Modifier.background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color.Green),
-                start = Offset(x = 0f, y = 2f),
-                end = Offset(x = 0f, y = 0f)
-            )
+            Color.Black
         )
     ) {
         TopAppBar(

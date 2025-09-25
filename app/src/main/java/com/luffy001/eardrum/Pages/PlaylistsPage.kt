@@ -91,7 +91,8 @@ fun PlaylistsComponent() {
                 Modifier
                     .height(100.dp)
                     .padding(bottom = 10.dp)
-                    .clickable(onClick = onCLick)
+                    .clickable(onClick = onCLick),
+                    verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     Modifier
@@ -107,7 +108,7 @@ fun PlaylistsComponent() {
                     fontSize = 20.sp,
                     modifier = Modifier
                         .padding(start = 10.dp)
-                        .width(totalWidth * 0.73f)
+                        .width(totalWidth * 0.65f)
                 )
                 OptionsPlaylist(name)
             }
@@ -278,7 +279,7 @@ fun OptionsPlaylist(namePlaylist: String) {
         ) {
             Icon(
                 painter = optionIcon, "options", modifier = Modifier
-                    .size(30.dp), tint = Color.White
+                    .size(36.dp), tint = Color.White
             )
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {

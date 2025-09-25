@@ -10,13 +10,12 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.luffy001.eardrum.MyApplication
+import com.luffy001.eardrum.ViewModels.uiModel
 import com.luffy001.eardrum.lib.AudioFile
-import com.luffy001.eardrum.lib.loadFilesAudio
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.collections.forEach
 
 class PlaybackViewModel : ViewModel() {
     private lateinit var controller: MediaController
@@ -45,6 +44,7 @@ class PlaybackViewModel : ViewModel() {
                 MediaController.Builder(MyApplication.instance, sessionToken).buildAsync()
             controllerFuture.addListener({
                 controller = controllerFuture.get()
+                getInitInfoPlayer()
                 controller.addListener(object : Player.Listener {
                     override fun onIsPlayingChanged(isPlaying: Boolean) {
                         _isPlaying.postValue(isPlaying)
@@ -62,6 +62,19 @@ class PlaybackViewModel : ViewModel() {
             Log.i("error", "Error: ${e.message.toString()}")
         }
 
+    }
+
+    fun getInitInfoPlayer() {
+        if (::controller.isInitialized) {
+            Log.i("song", "incializado")
+            if (controller.playbackState == Player.STATE_READY) {
+                val mediaItem = controller.mediaMetadata
+                val audioFile =
+                    uiModel.musicsList.find { it -> it.name == mediaItem.title.toString() }
+                _isPlaying.postValue(controller.isPlaying)
+                _audioPlaying.postValue(audioFile)
+            }
+        }
     }
 
     fun setPlaylist(listAudio: List<AudioFile>, indexItem: Int) {
@@ -89,9 +102,11 @@ class PlaybackViewModel : ViewModel() {
                     controller.prepare()
                     if (_isRandom.value == true) controller.shuffleModeEnabled = true
                 }
-                controller.seekTo(_indexItem.value ?: 0, 0L)
             }
+            controller.seekTo(_indexItem.value ?: 0, 0L)
             _playList.value?.let { it -> _audioPlaying.postValue(it[controller.currentMediaItemIndex]) }
+            _processAudio.postValue(0f)
+            _currentPosition.postValue(0f)
             playAndStop()
         } catch (e: Exception) {
             Log.i("Error", "Error: ${e.message}")
@@ -109,6 +124,7 @@ class PlaybackViewModel : ViewModel() {
         if (isNext) controller.seekToNext()
         else controller.seekToPrevious()
         _playList.value?.let { it -> _audioPlaying.postValue(it[controller.currentMediaItemIndex]) }
+        _processAudio.postValue(0f)
     }
 
     fun runAudio() {
@@ -127,9 +143,11 @@ class PlaybackViewModel : ViewModel() {
     }
 
     fun setPosition(position: Long) {
+        val totalDuration = _audioPlaying.value?.duration?.toFloat() ?: 0f
         Log.i("pos", position.toString())
         controller.seekTo(position)
         _currentPosition.postValue(controller.currentPosition.toFloat())
+        _processAudio.postValue(controller.currentPosition / totalDuration)
     }
 
     fun activeRandomMode() {

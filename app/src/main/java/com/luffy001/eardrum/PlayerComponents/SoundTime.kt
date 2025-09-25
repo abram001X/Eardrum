@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -20,10 +22,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,7 +42,6 @@ fun msToTime(ms: Long): String {
 
 @Composable
 fun VisPosition(viewModel: PlaybackViewModel) {
-
     val currentPosition by viewModel.currentPosition.observeAsState(0f)
     val audioPlaying by viewModel.audioPlaying.observeAsState(null)
     Row(
@@ -49,20 +50,16 @@ fun VisPosition(viewModel: PlaybackViewModel) {
             .padding(horizontal = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-
         Text(
             fontSize = 16.sp,
             text = msToTime(currentPosition.toLong()),
             color = Color.White
         )
-
         Text(
             fontSize = 16.sp,
             text = msToTime(audioPlaying?.duration?.toLong() ?: 0L),
             color = Color.White,
         )
-
-
     }
 }
 
@@ -71,6 +68,7 @@ fun VisPosition(viewModel: PlaybackViewModel) {
 fun SliderM3(viewModel: PlaybackViewModel) {
     val isPlaying by viewModel.isPlaying.observeAsState(false)
     val currentPosition by viewModel.currentPosition.observeAsState(0f)
+    val processAudio by viewModel.processAudio.observeAsState(0f)
     val audioPlaying by viewModel.audioPlaying.observeAsState(null)
     var duration by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(isPlaying) {
@@ -79,13 +77,12 @@ fun SliderM3(viewModel: PlaybackViewModel) {
     LaunchedEffect(audioPlaying) {
         duration = audioPlaying?.duration?.toFloat() ?: 0f
     }
-    Spacer(Modifier.height(40.dp))
+    Spacer(Modifier.height(20.dp))
     Slider(
         modifier = Modifier.fillMaxWidth(),
         value = currentPosition,
         onValueChange = {
             viewModel.setPosition(it.toLong())
-            Log.i("pos", it.toString())
         },
         valueRange = 0f..duration,
         thumb = {
@@ -97,6 +94,22 @@ fun SliderM3(viewModel: PlaybackViewModel) {
                         color = Color.White, shape = CircleShape
                     )
             )
+        },
+        track = {sliderState ->
+            Box(
+                modifier = Modifier
+                    .height(10.dp)
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(7.dp))
+                    .background(Color.LightGray)
+            ) {
+                Spacer(
+                    Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(fraction = processAudio)
+                        .background(Color.Yellow)
+                )
+            }
         })
 }
 

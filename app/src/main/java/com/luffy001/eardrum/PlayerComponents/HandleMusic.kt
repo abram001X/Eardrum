@@ -20,7 +20,6 @@ import com.luffy001.eardrum.service.PlaybackViewModel
 fun HandleMusic(viewModel: PlaybackViewModel) {
     val isRandom by viewModel.isRandom.observeAsState(false)
     val isPlaying by viewModel.isPlaying.observeAsState(false)
-
     val tint = Color.White
     val leftImage = painterResource(R.drawable.ic_left_arrow)
     val playImage = painterResource(R.drawable.ic_play)
@@ -42,29 +41,26 @@ fun HandleMusic(viewModel: PlaybackViewModel) {
             .clickable {
                 viewModel.previousNextAudio(false)
             }
-            .size(100.dp), tint
+            .size(80.dp), tint
     )
-
     Icon(
         painter = if (isPlaying) pauseImage else playImage,
         contentDescription = "PauseOrPlay",
         Modifier
-            .size(100.dp)
+            .size(80.dp)
             .clickable(onClick = {
                 viewModel.playAndStop()
             }),
         tint
     )
-
     Icon(
         rightImage,
         "Right",
         Modifier
-            .size(100.dp)
+            .size(80.dp)
             .clickable(onClick = { viewModel.previousNextAudio(true) }),
         tint
     )
-
     Icon(
         playlistImage,
         "playlist",
@@ -73,7 +69,7 @@ fun HandleMusic(viewModel: PlaybackViewModel) {
                 navController.navigate(Screens.PlaylistReproductionScreen.route)
             }
             .size(40.dp),
-        tint
+        Color.Yellow
     )
 }
 

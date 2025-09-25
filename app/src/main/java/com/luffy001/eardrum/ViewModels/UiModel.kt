@@ -1,5 +1,6 @@
 package com.luffy001.eardrum.ViewModels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,6 +13,7 @@ class UiModel : ViewModel() {
         private set
     private lateinit var listAudioMedia: List<AudioFile>
     fun setAudioList(list: List<AudioFile>) {
+        Log.i("list", list.toString())
         musicsList = list.toMutableList()
         listAudioMedia = list
     }
