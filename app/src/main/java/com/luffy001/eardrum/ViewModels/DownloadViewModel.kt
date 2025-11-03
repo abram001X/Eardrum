@@ -2,6 +2,7 @@ package com.luffy001.eardrum.ViewModels
 
 import android.app.DownloadManager
 import android.content.Context
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
@@ -17,6 +18,7 @@ import com.luffy001.eardrum.network.DownloadRemote
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.net.URI
 
 class DownloadViewModel : ViewModel() {
     private val _resultSearch = MutableLiveData(emptyList<Data>())
@@ -44,6 +46,7 @@ class DownloadViewModel : ViewModel() {
             Log.i("error", "error: ${e.message}")
         }
     }
+
     private fun downloadProcess(downloadId: Long, downloadManager: DownloadManager) {
         viewModelScope.launch(Dispatchers.IO) {
             var isDownloading = true
@@ -53,15 +56,18 @@ class DownloadViewModel : ViewModel() {
                 if (cursor.moveToFirst()) {
                     val columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
                     val status = cursor.getInt(columnIndex)
+
                     when (status) {
                         DownloadManager.STATUS_SUCCESSFUL -> {
                             isDownloading = false
                             _downloadProgress.postValue(100)
                         }
+
                         DownloadManager.STATUS_FAILED -> {
                             isDownloading = false
                             _downloadProgress.postValue(-1)
                         }
+
                         DownloadManager.STATUS_PENDING,
                         DownloadManager.STATUS_RUNNING -> {
                             val bytesDownloadedIndex =

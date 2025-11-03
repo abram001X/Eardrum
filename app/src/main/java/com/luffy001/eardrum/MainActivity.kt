@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Environment
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -12,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.media3.session.SessionToken
 import com.luffy001.eardrum.lib.loadFilesAudio
 import com.luffy001.eardrum.ViewModels.uiModel
+import com.luffy001.eardrum.lib.forceMediaScan
 import com.luffy001.eardrum.navigation.AppNavigation
 import com.luffy001.eardrum.service.PlaybackService
 import com.luffy001.eardrum.service.PlaybackViewModel
@@ -50,7 +52,6 @@ class MainActivity : ComponentActivity() {
             uiModel.setAudioList(mutableListOf())
         }
     }
-
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String?>, grantResults: IntArray, deviceId: Int
     ) {
@@ -58,6 +59,9 @@ class MainActivity : ComponentActivity() {
         if (requestCode == REQUEST_CODE_AUDIO) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //permiso concedido
+                //Forzar scaneo de mediaStore
+                forceMediaScan(MyApplication.instance, Environment.DIRECTORY_MUSIC)//
+                forceMediaScan(MyApplication.instance, Environment.DIRECTORY_DOWNLOADS)//
                 uiModel.setAudioList(loadFilesAudio(contentResolver))
             } else {
                 uiModel.setAudioList(mutableListOf())

@@ -2,10 +2,15 @@ package com.luffy001.eardrum.lib
 
 import android.content.ContentResolver
 import android.content.ContentUris
+import android.content.Context
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import com.luffy001.eardrum.MyApplication
+import java.io.File
 
 data class AudioFile(
     val id: Long,
@@ -17,6 +22,7 @@ data class AudioFile(
 
 val audioList = mutableListOf<AudioFile>()
 fun loadFilesAudio(resolver: ContentResolver): MutableList<AudioFile> {
+    audioList.clear()
     val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         MediaStore.Audio.Media.getContentUri(
             MediaStore.VOLUME_EXTERNAL
@@ -24,7 +30,6 @@ fun loadFilesAudio(resolver: ContentResolver): MutableList<AudioFile> {
     } else {
         MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
     }
-
     val sortOrder = "${MediaStore.Audio.Media.DISPLAY_NAME} ASC"
     val projection = arrayOf(
         MediaStore.Audio.Media._ID,
@@ -35,11 +40,7 @@ fun loadFilesAudio(resolver: ContentResolver): MutableList<AudioFile> {
         MediaStore.Audio.Media.RELATIVE_PATH
     )
     val query = resolver.query(
-        collection,
-        projection,
-        null,
-        null,
-        sortOrder
+        collection, projection, null, null, sortOrder
     )
     query?.use { cursor ->
         val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
@@ -59,11 +60,21 @@ fun loadFilesAudio(resolver: ContentResolver): MutableList<AudioFile> {
             audioList.add(audio)
         }
     }
-    Log.i("list", audioList.toString())
     return audioList
 }
 
-
-
+fun forceMediaScan(context: Context, directoryName: String) {
+    val file = Environment.getExternalStoragePublicDirectory(directoryName)
+    if (file.isDirectory) {
+        val filePaths = file.listFiles()?.map { it.absolutePath }?.toTypedArray()
+        if (filePaths.isNullOrEmpty()) return
+        MediaScannerConnection.scanFile(
+            context,
+            filePaths,
+            null,
+            null
+        )
+    }
+}
 
 

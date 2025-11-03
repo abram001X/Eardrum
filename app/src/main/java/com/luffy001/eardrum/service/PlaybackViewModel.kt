@@ -45,6 +45,7 @@ class PlaybackViewModel : ViewModel() {
             controllerFuture.addListener({
                 controller = controllerFuture.get()
                 getInitInfoPlayer()
+
                 controller.addListener(object : Player.Listener {
                     override fun onIsPlayingChanged(isPlaying: Boolean) {
                         _isPlaying.postValue(isPlaying)
@@ -66,7 +67,6 @@ class PlaybackViewModel : ViewModel() {
 
     fun getInitInfoPlayer() {
         if (::controller.isInitialized) {
-            Log.i("song", "incializado")
             if (controller.playbackState == Player.STATE_READY) {
                 val mediaItem = controller.mediaMetadata
                 val audioFile =

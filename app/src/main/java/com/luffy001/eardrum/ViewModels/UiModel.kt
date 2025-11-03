@@ -28,6 +28,7 @@ class UiModel : ViewModel() {
             musicsList = listSearch.toMutableList()
         }
     }
+
 }
 
 val uiModel by mutableStateOf(UiModel())

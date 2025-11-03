@@ -20,6 +20,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.luffy001.eardrum.R
@@ -144,6 +144,10 @@ fun TopBarSearch(isPlaylist: Boolean) {
                 ) {
                     if (!expanded) {
                         Text(text = "Eardrum", color = Color.White)
+                        Button(onClick = {
+                            uiModel.setAudioList(loadFilesAudio(MyApplication.instance.contentResolver))
+                            Log.i("reload", "lista de musica recargada")
+                        }) { Text(text = "recargar")}
                         IconButton(onClick = { expanded = true }) {
                             Icon(
                                 painter = searchIcon,

@@ -60,6 +60,9 @@ dependencies {
 //media3
     implementation("androidx.media3:media3-session:1.3.1")
     implementation("androidx.compose.runtime:runtime-livedata:1.9.0")
+// datastore
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
+    implementation("androidx.datastore:datastore:1.1.7")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
