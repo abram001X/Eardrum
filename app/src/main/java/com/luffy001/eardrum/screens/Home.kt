@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.luffy001.eardrum.R
@@ -88,14 +89,15 @@ fun Component(viewModel: PlaybackViewModel) {
 
 @Composable
 fun ListMusic(viewModel: PlaybackViewModel) {
+    val items by uiModel.items.collectAsState()
     Column(Modifier.fillMaxSize()) {
         Spacer(Modifier.height(7.dp))
         HeaderHome(viewModel, false)
         LazyColumn(Modifier.fillMaxSize()) {
-            items(uiModel.musicsList) { audio ->
+            items(items) { audio ->
                 BoxData(viewModel, audio) {
-                    val indexItem = uiModel.musicsList.indexOf(audio)
-                    viewModel.setPlaylist(uiModel.musicsList, indexItem)
+                    val indexItem = items.indexOf(audio)
+                    viewModel.setPlaylist(items, indexItem)
                     navController.navigate(Screens.PlayerScreen.route + "/true")
                 }
             }

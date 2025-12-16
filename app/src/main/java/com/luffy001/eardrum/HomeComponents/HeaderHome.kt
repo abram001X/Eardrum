@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -176,7 +177,7 @@ fun OrderMusics(viewModel: PlaybackViewModel,isPlaylist: Boolean) {
                 if (isPlaylist) {
                     musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.name })
                 } else {
-                    uiModel.setAudioList(uiModel.musicsList.sortedBy { it.name })
+                    uiModel.onOrderList("abc")
                 }
             }
         )
@@ -187,7 +188,7 @@ fun OrderMusics(viewModel: PlaybackViewModel,isPlaylist: Boolean) {
                     musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.date }
                         .reversed())
                 } else {
-                    uiModel.setAudioList(uiModel.musicsList.sortedBy { it.date }.reversed())
+                    uiModel.onOrderList("date")
                 }
             }
         )
@@ -196,6 +197,7 @@ fun OrderMusics(viewModel: PlaybackViewModel,isPlaylist: Boolean) {
 
 @Composable
 fun PlayHome(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
+    val items by uiModel.items.collectAsState()
     val isRandom by viewModel.isRandom.observeAsState(false)
     val playIcon = painterResource(R.drawable.ic_play)
     IconButton(onClick = {
@@ -204,9 +206,9 @@ fun PlayHome(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
             val position = if (isRandom) randomPosition else 0
             viewModel.setPlaylist(musicPlaylist.listMusicsModel, position)
         } else {
-            val randomPosition = Random.nextInt(uiModel.musicsList.size)
+            val randomPosition = Random.nextInt(items.size)
             val position = if (isRandom) randomPosition else 0
-            viewModel.setPlaylist(uiModel.musicsList, position)
+            viewModel.setPlaylist(items, position)
         }
         navController.navigate(Screens.PlayerScreen.route + "/true")
     }) {

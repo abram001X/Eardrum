@@ -15,13 +15,13 @@ import com.luffy001.eardrum.lib.AudioFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-class PlaybackViewModel : ViewModel() {
-    private lateinit var controller: MediaController
+class PlaybackViewModel() : ViewModel() {
 
+    private lateinit var controller: MediaController
     private val _indexItem = MutableLiveData(0)
-    val indexItem: LiveData<Int> = _indexItem
 
     private val _isPlaying = MutableLiveData(false)
     val isPlaying: LiveData<Boolean> = _isPlaying
@@ -70,7 +70,7 @@ class PlaybackViewModel : ViewModel() {
             if (controller.playbackState == Player.STATE_READY) {
                 val mediaItem = controller.mediaMetadata
                 val audioFile =
-                    uiModel.musicsList.find { it -> it.name == mediaItem.title.toString() }
+                    uiModel.listAudioMedia.find { it -> it.name == mediaItem.title.toString() }
                 _isPlaying.postValue(controller.isPlaying)
                 _audioPlaying.postValue(audioFile)
             }
@@ -164,6 +164,5 @@ class PlaybackViewModel : ViewModel() {
         super.onCleared()
         controller.release()
     }
-
 }
 
