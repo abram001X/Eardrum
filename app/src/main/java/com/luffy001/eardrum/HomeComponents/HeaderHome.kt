@@ -32,6 +32,7 @@ import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.ViewModels.interfaceViewModel
 import com.luffy001.eardrum.ViewModels.musicPlaylist
 import com.luffy001.eardrum.ViewModels.uiModel
+import com.luffy001.eardrum.lib.removeAudios
 import com.luffy001.eardrum.screens.Screens
 import com.luffy001.eardrum.screens.navController
 import com.luffy001.eardrum.service.PlaybackViewModel
@@ -153,6 +154,12 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
                     }
                 )
                 if (expandedOptions) OptionMusic(interfaceViewModel.elementsSelected)
+                DropdownMenuItem(
+                    text = { Text("Eliminar archivos", fontFamily = FontFamily.SansSerif, color = Color.Red) },
+                    onClick = { removeAudios(interfaceViewModel.elementsSelected)
+                        expanded = false
+                        interfaceViewModel.activatePressed(false)}
+                )
             }
         }
     }

@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class PlaybackViewModel() : ViewModel() {
-
     private lateinit var controller: MediaController
     private val _indexItem = MutableLiveData(0)
 
@@ -99,10 +98,12 @@ class PlaybackViewModel() : ViewModel() {
             if (_playList.value != null && listUri != null) {
                 _playList.value?.let { controller.setMediaItems(listUri.toMutableList(), true) }
                 if (_playList.value.isEmpty()) {
+                    controller.repeatMode = Player.REPEAT_MODE_ALL
                     controller.prepare()
                     if (_isRandom.value == true) controller.shuffleModeEnabled = true
                 }
             }
+            controller.repeatMode = Player.REPEAT_MODE_ALL
             controller.seekTo(_indexItem.value ?: 0, 0L)
             _playList.value?.let { it -> _audioPlaying.postValue(it[controller.currentMediaItemIndex]) }
             _processAudio.postValue(0f)

@@ -35,6 +35,7 @@ import com.luffy001.eardrum.HomeComponents.OptionMusic
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.ViewModels.musicPlaylist
+import com.luffy001.eardrum.lib.deleteAudio
 import com.luffy001.eardrum.service.PlaybackViewModel
 @Composable
 fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
@@ -97,6 +98,8 @@ fun MenuMusicPlaylist(
                 text = { Text("Agregar a playlist", fontFamily = FontFamily.SansSerif) },
                 onClick = { expandedOptions = true }
             )
+
+
             if (playlist.isNotEmpty()) DropdownMenuItem(
                 text = { Text("Agregar a reproducción", fontFamily = FontFamily.SansSerif) },
                 onClick = {
@@ -118,6 +121,18 @@ fun MenuMusicPlaylist(
                             listOf(audio)
                         )
                     }
+                )
+            }
+            if(!isPlaylist) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            "Eliminar archivo",
+                            fontFamily = FontFamily.SansSerif,
+                            color = Color.Red
+                        )
+                    },
+                    onClick = { deleteAudio(audio.contentUri) }
                 )
             }
             if (expandedOptions) OptionMusic(listOf(audio))
