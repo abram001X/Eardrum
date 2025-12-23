@@ -28,6 +28,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -94,6 +95,7 @@ fun TopBar2(navigation: String, title: String) {
 
 @Composable
 fun ImagePlayer(viewModel: PlaybackViewModel) {
+    val items by uiModel.items.collectAsState()
     val optionIcon = painterResource(R.drawable.ic_option)
     var expanded by remember { mutableStateOf(false) }
     var expandedOptions by remember { mutableStateOf(false) }
@@ -138,7 +140,7 @@ fun ImagePlayer(viewModel: PlaybackViewModel) {
                             )
                         }, onClick = { expandedOptions = true })
                         if (expandedOptions) {
-                            OptionMusic(listOf<AudioFile>(audioPlaying ?: uiModel.musicsList[0]))
+                            OptionMusic(listOf<AudioFile>(audioPlaying ?: items[0]))
                         }
                     }
                 }

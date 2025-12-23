@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +32,7 @@ import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.ViewModels.interfaceViewModel
 import com.luffy001.eardrum.ViewModels.musicPlaylist
 import com.luffy001.eardrum.ViewModels.uiModel
+import com.luffy001.eardrum.lib.removeAudios
 import com.luffy001.eardrum.screens.Screens
 import com.luffy001.eardrum.screens.navController
 import com.luffy001.eardrum.service.PlaybackViewModel
@@ -152,6 +154,12 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
                     }
                 )
                 if (expandedOptions) OptionMusic(interfaceViewModel.elementsSelected)
+                DropdownMenuItem(
+                    text = { Text("Eliminar archivos", fontFamily = FontFamily.SansSerif, color = Color.Red) },
+                    onClick = { removeAudios(interfaceViewModel.elementsSelected)
+                        expanded = false
+                        interfaceViewModel.activatePressed(false)}
+                )
             }
         }
     }
@@ -176,7 +184,7 @@ fun OrderMusics(viewModel: PlaybackViewModel,isPlaylist: Boolean) {
                 if (isPlaylist) {
                     musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.name })
                 } else {
-                    uiModel.setAudioList(uiModel.musicsList.sortedBy { it.name })
+                    uiModel.onOrderList("abc")
                 }
             }
         )
@@ -187,7 +195,7 @@ fun OrderMusics(viewModel: PlaybackViewModel,isPlaylist: Boolean) {
                     musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.date }
                         .reversed())
                 } else {
-                    uiModel.setAudioList(uiModel.musicsList.sortedBy { it.date }.reversed())
+                    uiModel.onOrderList("date")
                 }
             }
         )
@@ -196,6 +204,7 @@ fun OrderMusics(viewModel: PlaybackViewModel,isPlaylist: Boolean) {
 
 @Composable
 fun PlayHome(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
+    val items by uiModel.items.collectAsState()
     val isRandom by viewModel.isRandom.observeAsState(false)
     val playIcon = painterResource(R.drawable.ic_play)
     IconButton(onClick = {
@@ -204,9 +213,9 @@ fun PlayHome(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
             val position = if (isRandom) randomPosition else 0
             viewModel.setPlaylist(musicPlaylist.listMusicsModel, position)
         } else {
-            val randomPosition = Random.nextInt(uiModel.musicsList.size)
+            val randomPosition = Random.nextInt(items.size)
             val position = if (isRandom) randomPosition else 0
-            viewModel.setPlaylist(uiModel.musicsList, position)
+            viewModel.setPlaylist(items, position)
         }
         navController.navigate(Screens.PlayerScreen.route + "/true")
     }) {

@@ -1,5 +1,6 @@
 package com.luffy001.eardrum.lib
 
+import android.app.RecoverableSecurityException
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
@@ -77,4 +78,31 @@ fun forceMediaScan(context: Context, directoryName: String) {
     }
 }
 
+fun deleteAudio(fileUri: Uri){
+    val contentResolver = MyApplication.instance.contentResolver
+    try {
+        contentResolver.delete(fileUri,null,null)
+    } catch (securityException : SecurityException){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+            val recoverableSecurityException = securityException as? RecoverableSecurityException
+                ?: throw securityException
+            Log.i("remaudio", "Se requiere el permiso del usuario")
+        }
+    }
+}
+
+fun removeAudios(listUris: List<AudioFile>){
+    val contentResolver = MyApplication.instance.contentResolver
+    try {
+        listUris.forEach { uri ->
+            contentResolver.delete(uri.contentUri,null,null)
+        }
+    } catch (securityException : SecurityException){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+            val recoverableSecurityException = securityException as? RecoverableSecurityException
+                ?: throw securityException
+            Log.i("remaudio", "Se requiere el permiso del usuario")
+        }
+    }
+}
 

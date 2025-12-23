@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -69,6 +70,7 @@ fun BoxData(
     namePlaylist: String? = null,
     onClick: () -> Unit
 ) {
+    val items by uiModel.items.collectAsState()
     var colorBackground by remember { mutableStateOf(Color.Transparent) }
     var isSelected by remember { mutableStateOf(false) }
     var selectOrNavigate by remember { mutableStateOf({}) }
@@ -79,13 +81,13 @@ fun BoxData(
     }
     LaunchedEffect(
         interfaceViewModel.elementsSelected,
-        if (!isPlaylist) uiModel.musicsList else musicPlaylist.listMusicsModel
+        if (!isPlaylist) items else musicPlaylist.listMusicsModel
     ) {
         isSelected = (interfaceViewModel.elementsSelected.contains(audio))
     }
     LaunchedEffect(
         isSelected,
-        if (!isPlaylist) uiModel.musicsList else musicPlaylist.listMusicsModel, audioPlaying
+        if (!isPlaylist) items else musicPlaylist.listMusicsModel, audioPlaying
     ) {
         colorBackground =
             if (isSelected) {

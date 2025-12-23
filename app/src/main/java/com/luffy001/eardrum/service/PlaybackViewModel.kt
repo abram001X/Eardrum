@@ -15,13 +15,12 @@ import com.luffy001.eardrum.lib.AudioFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-class PlaybackViewModel : ViewModel() {
+class PlaybackViewModel() : ViewModel() {
     private lateinit var controller: MediaController
-
     private val _indexItem = MutableLiveData(0)
-    val indexItem: LiveData<Int> = _indexItem
 
     private val _isPlaying = MutableLiveData(false)
     val isPlaying: LiveData<Boolean> = _isPlaying
@@ -71,7 +70,7 @@ class PlaybackViewModel : ViewModel() {
             if (controller.playbackState == Player.STATE_READY) {
                 val mediaItem = controller.mediaMetadata
                 val audioFile =
-                    uiModel.musicsList.find { it -> it.name == mediaItem.title.toString() }
+                    uiModel.listAudioMedia.find { it -> it.name == mediaItem.title.toString() }
                 _isPlaying.postValue(controller.isPlaying)
                 _audioPlaying.postValue(audioFile)
             }
@@ -100,10 +99,12 @@ class PlaybackViewModel : ViewModel() {
             if (_playList.value != null && listUri != null) {
                 _playList.value?.let { controller.setMediaItems(listUri.toMutableList(), true) }
                 if (_playList.value.isEmpty()) {
+                    controller.repeatMode = Player.REPEAT_MODE_ALL
                     controller.prepare()
                     if (_isRandom.value == true) controller.shuffleModeEnabled = true
                 }
             }
+            controller.repeatMode = Player.REPEAT_MODE_ALL
             controller.seekTo(_indexItem.value ?: 0, 0L)
             _playList.value?.let { it -> _audioPlaying.postValue(it[controller.currentMediaItemIndex]) }
             _processAudio.postValue(0f)
@@ -165,6 +166,5 @@ class PlaybackViewModel : ViewModel() {
         super.onCleared()
         controller.release()
     }
-
 }
 
