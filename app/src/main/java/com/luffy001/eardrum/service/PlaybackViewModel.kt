@@ -38,6 +38,7 @@ class PlaybackViewModel : ViewModel() {
     val processAudio: LiveData<Float> = _processAudio
     private val _isRandom = MutableLiveData(false)
     val isRandom: LiveData<Boolean> = _isRandom
+
     fun init(sessionToken: SessionToken) {
         try {
             val controllerFuture =
