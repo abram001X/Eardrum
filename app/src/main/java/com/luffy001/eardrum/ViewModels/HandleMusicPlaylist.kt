@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import com.luffy001.eardrum.MyApplication
 import com.luffy001.eardrum.lib.AudioFile
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 
 class HandleMusicPlaylist() : ViewModel() {
@@ -61,12 +62,14 @@ class HandleMusicPlaylist() : ViewModel() {
 
     fun loadFilesPlaylist(musicsList: File) {
         val retriever = MediaMetadataRetriever()
+        var fis: FileInputStream? = null
         val listsAudio = mutableListOf<AudioFile>()
         val fileList = musicsList.listFiles()
         if (fileList != null) {
             for (index in fileList.indices) {
                 try {
-                    retriever.setDataSource(fileList[index].absolutePath)
+                    fis = FileInputStream(fileList[index])
+                    retriever.setDataSource(fis.fd)
                     val id = index.toLong()
                     val duration =
                         retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
@@ -96,6 +99,7 @@ class HandleMusicPlaylist() : ViewModel() {
             listMusicsModel = listsAudio
         }
         retriever.release()
+        fis?.close()
     }
 
     fun removeMusicFromPlaylists(namePlaylist: String, listAudio: List<AudioFile>) {

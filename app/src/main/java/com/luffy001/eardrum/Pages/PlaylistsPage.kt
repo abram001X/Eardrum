@@ -300,17 +300,16 @@ fun PlaylistSelect(listAudio: List<AudioFile>) {
     Spacer(Modifier.height(20.dp))
     LazyColumn(Modifier.fillMaxSize()) {
         items(playlistController.playlistsModel) { name ->
-            val onCLick =
-                {
-                    interfaceViewModel.activatePressed(false)
-                    musicPlaylist.addMusicToPlaylist(name, listAudio)
-                }
+
             Row(
                 Modifier
                     .fillMaxWidth()
                     .height(60.dp)
                     .padding(bottom = 10.dp)
-                    .clickable(onClick = onCLick)
+                    .clickable(onClick = {
+                            interfaceViewModel.activatePressed(false)
+                            musicPlaylist.addMusicToPlaylist(name, listAudio)
+                        })
             ) {
                 val painter = painterResource(R.drawable.ic_logosimple)
                 Image(
