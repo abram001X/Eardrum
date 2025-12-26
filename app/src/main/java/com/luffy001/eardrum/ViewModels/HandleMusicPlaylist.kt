@@ -61,33 +61,41 @@ class HandleMusicPlaylist() : ViewModel() {
 
     fun loadFilesPlaylist(musicsList: File) {
         val retriever = MediaMetadataRetriever()
-        try {
-            val listsAudio = mutableListOf<AudioFile>()
-            val fileList = musicsList.listFiles()
+        val listsAudio = mutableListOf<AudioFile>()
+        val fileList = musicsList.listFiles()
+        if (fileList != null) {
             for (index in fileList.indices) {
-                retriever.setDataSource(fileList[index].absolutePath)
-                val id = index.toLong()
-                val duration =
-                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                        ?.toInt() ?: 0
-                val name =
-                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE).toString()
+                try {
+                    retriever.setDataSource(fileList[index].absolutePath)
+                    val id = index.toLong()
+                    val duration =
+                        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                            ?.toInt() ?: 0
+                    val name =
+                        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+                            .toString()
 
-                val date =
-                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE)?.toInt()
-                        ?: 0
-                val contentUri = Uri.fromFile(fileList[index])
-                val audio = AudioFile(id, name, duration, contentUri, date)
-                listsAudio.add(audio)
+                    val date =
+                        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE)
+                            ?.toInt()
+                            ?: 0
+                    val contentUri = Uri.fromFile(fileList[index])
+                    val audio = AudioFile(id, name, duration, contentUri, date)
+                    listsAudio.add(audio)
+
+                } catch (e: Exception) {
+                    // eliminar el archivo corrupto o, dañado
+                    Log.i("play", "Error: ${e.message.toString()}")
+                    val musicFile = File(fileList[index].absolutePath)
+                    if (musicFile.delete()) {
+                        Log.i("play", "${musicFile}:  file deleted") // Notificar al usuario que audio esta corrupto
+                    } else Log.i("play", "${musicFile}:  file error")
+                }
             }
             listAudioMedia = listsAudio
             listMusicsModel = listsAudio
-        } catch (e: Exception) {
-            Log.i("play", "Error: ${e.message.toString()}")
-        } finally {
-            retriever.release()
         }
-
+        retriever.release()
     }
 
     fun removeMusicFromPlaylists(namePlaylist: String, listAudio: List<AudioFile>) {
@@ -118,7 +126,9 @@ class HandleMusicPlaylist() : ViewModel() {
                 listMusicsModel = listAudioMedia.toMutableList()
             }
             val listSearch =
-                listAudioMedia.filter { it -> it.name.lowercase().contains(nameMusic.lowercase()) }
+                listAudioMedia.filter { it ->
+                    it.name.lowercase().contains(nameMusic.lowercase())
+                }
             listMusicsModel = listSearch.toMutableList()
         }
     }

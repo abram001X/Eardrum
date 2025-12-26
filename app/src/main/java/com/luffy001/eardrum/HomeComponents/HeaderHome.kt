@@ -45,7 +45,7 @@ fun HeaderHome(
     isReproduction: Boolean? = false,
     namePlaylist: String = ""
 ) {
-    val isRandom by viewModel.isRandom.observeAsState(false)
+    val isRandom by viewModel.isRandom.collectAsState()
     val randomIcon = painterResource(R.drawable.ic_random)
     val noRandomIcon = painterResource(R.drawable.ic_order_playlist)
     if ((isReproduction == true && interfaceViewModel.isPress) || isReproduction == false) Row(
@@ -205,7 +205,7 @@ fun OrderMusics(viewModel: PlaybackViewModel,isPlaylist: Boolean) {
 @Composable
 fun PlayHome(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
     val items by uiModel.items.collectAsState()
-    val isRandom by viewModel.isRandom.observeAsState(false)
+    val isRandom by viewModel.isRandom.collectAsState()
     val playIcon = painterResource(R.drawable.ic_play)
     IconButton(onClick = {
         if (isPlaylist) { // usar listas distintas

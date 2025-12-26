@@ -5,20 +5,26 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.luffy001.eardrum.MyApplication
+import com.luffy001.eardrum.ViewModels.DatastorePreferences
 import com.luffy001.eardrum.ViewModels.uiModel
 import com.luffy001.eardrum.lib.AudioFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class PlaybackViewModel() : ViewModel() {
+class PlaybackViewModel(private val repository: DatastorePreferences) : ViewModel() {
     private lateinit var controller: MediaController
     private val _indexItem = MutableLiveData(0)
 
@@ -35,8 +41,16 @@ class PlaybackViewModel() : ViewModel() {
 
     private val _processAudio = MutableLiveData(0f)
     val processAudio: LiveData<Float> = _processAudio
-    private val _isRandom = MutableLiveData(false)
-    val isRandom: LiveData<Boolean> = _isRandom
+    private val _isRandom = MutableStateFlow<Boolean>(false)
+    val isRandom: StateFlow<Boolean> = _isRandom.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            repository.randomMode.collect { random ->
+                _isRandom.value = random.toBoolean()
+            }
+        }
+    }
 
     fun init(sessionToken: SessionToken) {
         try {
@@ -68,11 +82,22 @@ class PlaybackViewModel() : ViewModel() {
     fun getInitInfoPlayer() {
         if (::controller.isInitialized) {
             if (controller.playbackState == Player.STATE_READY) {
+                val listPlaylist = mutableListOf<AudioFile>()
+                for (i in 0 until controller.mediaItemCount) {
+                    val mediaItem = controller.getMediaItemAt(i)
+                    val name = mediaItem.mediaMetadata.title
+                    val item = uiModel.listAudioMedia.find { it ->
+                        it.name == name.toString()
+                    }
+                    Log.i("nameA", item.toString())
+                    listPlaylist.add(item ?: uiModel.listAudioMedia[0])
+                }
                 val mediaItem = controller.mediaMetadata
                 val audioFile =
                     uiModel.listAudioMedia.find { it -> it.name == mediaItem.title.toString() }
                 _isPlaying.postValue(controller.isPlaying)
                 _audioPlaying.postValue(audioFile)
+                _playList.postValue(listPlaylist.toList())
             }
         }
     }
@@ -94,10 +119,24 @@ class PlaybackViewModel() : ViewModel() {
     }
 
     fun prepareMedia() {
-        val listUri = _playList.value?.let { it.map { it -> MediaItem.fromUri(it.contentUri) } }
+        val listUri = _playList.value?.let {
+            it.map { it ->
+                MediaItem.Builder()
+                    .setUri(it.contentUri).setMediaId(it.id.toString())
+                    .setMediaMetadata(
+                        MediaMetadata.Builder()
+                            .setTitle(it.name)
+                            .setDurationMs(it.duration.toLong()).build()
+                    )
+                    .build()
+
+            }
+        }
         try {
             if (_playList.value != null && listUri != null) {
-                _playList.value?.let { controller.setMediaItems(listUri.toMutableList(), true) }
+                _playList.value?.let {
+                    controller.setMediaItems(listUri.toMutableList(), true)
+                }
                 if (_playList.value.isEmpty()) {
                     controller.repeatMode = Player.REPEAT_MODE_ALL
                     controller.prepare()
@@ -153,8 +192,13 @@ class PlaybackViewModel() : ViewModel() {
     }
 
     fun activeRandomMode() {
-        _isRandom.value?.let { controller.shuffleModeEnabled = !it }
-        _isRandom.value?.let { _isRandom.postValue(!it) }
+        if (::controller.isInitialized) {
+            controller.shuffleModeEnabled = !_isRandom.value
+        }
+        _isRandom.value = !_isRandom.value
+        viewModelScope.launch {
+            repository.saveRandomMode(_isRandom.value)
+        }
     }
 
     fun changeMusic(position: Int = 0) {

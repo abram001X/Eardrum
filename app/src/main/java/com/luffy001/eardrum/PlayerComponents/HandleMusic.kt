@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -18,7 +19,7 @@ import com.luffy001.eardrum.service.PlaybackViewModel
 
 @Composable
 fun HandleMusic(viewModel: PlaybackViewModel) {
-    val isRandom by viewModel.isRandom.observeAsState(false)
+    val isRandom by viewModel.isRandom.collectAsState()
     val isPlaying by viewModel.isPlaying.observeAsState(false)
     val tint = Color.White
     val leftImage = painterResource(R.drawable.ic_left_arrow)

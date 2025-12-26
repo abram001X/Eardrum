@@ -12,19 +12,24 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "layout_references")
-
 class DatastorePreferences() {
     private val dataStore = MyApplication.instance.dataStore
 
     companion object{
         val LIST_ORDER_KEY = stringPreferencesKey("date")
+        val RANDOM_MODE_KEY = stringPreferencesKey("false")
     }
     // leer preferencia
     val listOrder : Flow<String> = dataStore.data.map { preferences -> preferences[LIST_ORDER_KEY]  ?: "abc"}
+
+    val randomMode : Flow<String> = dataStore.data.map { preferences -> (preferences[RANDOM_MODE_KEY] ?: "false") }
 
     // reescribir preferencia
     suspend fun saveListOrder(order: String){
         dataStore.edit { preferences -> preferences[LIST_ORDER_KEY] = order }
     }
-
+    suspend fun saveRandomMode(isRandom: Boolean){
+        val isRandomStr = isRandom.toString()
+        dataStore.edit { preferences -> preferences[RANDOM_MODE_KEY] = isRandomStr }
+    }
 }

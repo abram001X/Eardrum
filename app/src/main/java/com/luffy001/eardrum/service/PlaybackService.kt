@@ -16,7 +16,7 @@ class PlaybackService : MediaSessionService() {
     companion object {
         const val CUSTOM_COMMAND_LIKE = "ACTION_LIKE"
     }
-    fun registerObserver(){
+    fun registerObserver(){ ////Para observar loas audios dentro del dispositivo
         // Registrar observer
         mediaStoreObserver = MediaStoreObserver(Handler())
         val audioUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI

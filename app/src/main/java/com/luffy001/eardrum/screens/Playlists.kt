@@ -132,7 +132,8 @@ fun MenuMusicPlaylist(
                             color = Color.Red
                         )
                     },
-                    onClick = { deleteAudio(audio.contentUri) }
+                    onClick = { deleteAudio(audio.contentUri)
+                        expanded = false}
                 )
             }
             if (expandedOptions) OptionMusic(listOf(audio))

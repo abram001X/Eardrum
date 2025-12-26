@@ -285,7 +285,10 @@ fun OptionsPlaylist(namePlaylist: String) {
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             DropdownMenuItem(
                 text = { Text("Eliminar playlist") },
-                onClick = { playlistController.removePlaylist(namePlaylist) }
+                onClick = {
+                    playlistController.removePlaylist(namePlaylist)
+                    expanded = false
+                }
             )
             CreateOrRenamePlaylist(false, namePlaylist)
         }
@@ -299,8 +302,8 @@ fun PlaylistSelect(listAudio: List<AudioFile>) {
         items(playlistController.playlistsModel) { name ->
             val onCLick =
                 {
-                    musicPlaylist.addMusicToPlaylist(name, listAudio)
                     interfaceViewModel.activatePressed(false)
+                    musicPlaylist.addMusicToPlaylist(name, listAudio)
                 }
             Row(
                 Modifier

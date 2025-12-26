@@ -10,7 +10,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.media3.session.SessionToken
+import com.luffy001.eardrum.ViewModels.DatastorePreferences
 import com.luffy001.eardrum.lib.loadFilesAudio
 import com.luffy001.eardrum.ViewModels.uiModel
 import com.luffy001.eardrum.lib.forceMediaScan
@@ -22,7 +25,13 @@ import com.luffy001.eardrum.ui.theme.EardrumTheme
 
 class MainActivity : ComponentActivity() {
     private val REQUEST_CODE_AUDIO = 100
-    private val viewModel: PlaybackViewModel by viewModels()
+    private val viewModel: PlaybackViewModel by viewModels{
+        object : ViewModelProvider.Factory{
+            override fun <T : ViewModel> create(modelClass: Class<T>): T{
+                return PlaybackViewModel(DatastorePreferences()) as T
+            }
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val sessionToken = SessionToken(
