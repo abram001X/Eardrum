@@ -32,7 +32,7 @@ import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.ViewModels.interfaceViewModel
 import com.luffy001.eardrum.ViewModels.musicPlaylist
 import com.luffy001.eardrum.ViewModels.uiModel
-import com.luffy001.eardrum.lib.removeAudios
+import com.luffy001.eardrum.lib.deleteAudio
 import com.luffy001.eardrum.screens.Screens
 import com.luffy001.eardrum.screens.navController
 import com.luffy001.eardrum.service.PlaybackViewModel
@@ -156,7 +156,7 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
                 if (expandedOptions) OptionMusic(interfaceViewModel.elementsSelected)
                 DropdownMenuItem(
                     text = { Text("Eliminar archivos", fontFamily = FontFamily.SansSerif, color = Color.Red) },
-                    onClick = { removeAudios(interfaceViewModel.elementsSelected)
+                    onClick = { deleteAudio(interfaceViewModel.elementsSelected.map { it -> it.contentUri })
                         expanded = false
                         interfaceViewModel.activatePressed(false)}
                 )
@@ -179,7 +179,7 @@ fun OrderMusics(viewModel: PlaybackViewModel,isPlaylist: Boolean) {
     }
     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
         DropdownMenuItem(
-            text = { Text("Ordenar alfabeticamente") },
+            text = { Text("alfabéticamente A-Z") },
             onClick = {
                 if (isPlaylist) {
                     musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.name })
@@ -189,13 +189,33 @@ fun OrderMusics(viewModel: PlaybackViewModel,isPlaylist: Boolean) {
             }
         )
         DropdownMenuItem(
-            text = { Text("Ordernar por fecha") },
+            text = { Text("alfabéticamente Z-A") },
+            onClick = {
+                if (isPlaylist) {
+                    musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.name }.reversed())
+                } else {
+                    uiModel.onOrderList("cba")
+                }
+            }
+        )
+        DropdownMenuItem(
+            text = { Text("Más recientes") },
             onClick = {
                 if (isPlaylist) {
                     musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.date }
                         .reversed())
                 } else {
                     uiModel.onOrderList("date")
+                }
+            }
+        )
+        DropdownMenuItem(
+            text = { Text("Más antiguos") },
+            onClick = {
+                if (isPlaylist) {
+                    musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.date })
+                } else {
+                    uiModel.onOrderList("datereversed")
                 }
             }
         )

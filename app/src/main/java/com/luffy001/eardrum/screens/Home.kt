@@ -122,12 +122,13 @@ fun InitHome(navigation: NavController, viewModel: PlaybackViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarSearch(isPlaylist: Boolean) {
+fun TopBarSearch(isPlaylist: Boolean, name: String = "Eardrum") {
     val searchIcon = painterResource(R.drawable.ic_search_icon)
     var expanded by remember { mutableStateOf(false) }
     var nameMusic by remember { mutableStateOf("") }
     val arrowBack = painterResource(R.drawable.ic_remove_x)
     val totalWidth = LocalConfiguration.current.screenWidthDp.dp
+    val colorTitle = if(isPlaylist) Color.Yellow else Color.White
     Box(
         modifier = Modifier.background(
             Color.Black
@@ -145,11 +146,11 @@ fun TopBarSearch(isPlaylist: Boolean) {
                         .fillMaxWidth()
                 ) {
                     if (!expanded) {
-                        Text(text = "Eardrum", color = Color.White)
-                        Button(onClick = {
-                            uiModel.setAudioList(loadFilesAudio(MyApplication.instance.contentResolver))
-                            Log.i("reload", "lista de musica recargada")
-                        }) { Text(text = "recargar")}
+                        Text(text = name, color = colorTitle)
+//                        Button(onClick = { recargar lista de app
+//                            uiModel.setAudioList(loadFilesAudio(MyApplication.instance.contentResolver))
+//                            Log.i("reload", "lista de musica recargada")
+//                        }) { Text(text = "recargar")}
                         IconButton(onClick = { expanded = true }) {
                             Icon(
                                 painter = searchIcon,

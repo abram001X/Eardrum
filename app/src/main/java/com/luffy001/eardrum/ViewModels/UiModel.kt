@@ -33,8 +33,14 @@ class UiModel(private val repository:DatastorePreferences) : ViewModel() {
         if(orderString == "date"){
             list = listAudioMedia.sortedBy { it.date }.reversed()
         }
+        if(orderString == "datereversed"){
+            list = listAudioMedia.sortedBy { it.date }
+        }
         if(orderString == "abc"){
             list = listAudioMedia.sortedBy { it.name }
+        }
+        if(orderString == "cba"){
+            list = listAudioMedia.sortedBy { it.name }.reversed()
         }
         listAudioMedia = list
         _items.value = list
@@ -53,7 +59,6 @@ class UiModel(private val repository:DatastorePreferences) : ViewModel() {
         }
         Log.i("list", list.toString())
     }
-
     fun searchMusicByName(nameMusic: String) {
         if (listAudioMedia.isNotEmpty()) {
             if (nameMusic.trimEnd() == "") {

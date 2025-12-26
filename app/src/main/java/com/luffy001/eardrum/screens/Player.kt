@@ -64,14 +64,14 @@ fun InitPlayerApp(viewModel: PlaybackViewModel, isPrepared: Boolean = false) {
             viewModel.prepareMedia()
         }
     }
-    Scaffold(topBar = { TopBar2(Screens.HomeScreen.route, "Escuchando") }) { innerPadding ->
+    Scaffold(topBar = { TopBar2("Escuchando") }) { innerPadding ->
         PlayerApp(innerPadding, viewModel)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar2(navigation: String, title: String) {
+fun TopBar2(title: String) {
     val arrowBack = painterResource(R.drawable.ic_arrow_back)
     TopAppBar(
         title = {
@@ -79,7 +79,7 @@ fun TopBar2(navigation: String, title: String) {
                 Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = {
-                    navController.navigate(navigation)
+                    navController.navigateUp()
                 }) {
                     Icon(
                         painter = arrowBack, contentDescription = "back", tint = Color.White

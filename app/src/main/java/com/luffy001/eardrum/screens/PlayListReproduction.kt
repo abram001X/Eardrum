@@ -41,7 +41,6 @@ fun PlayListReproduction(viewModel: PlaybackViewModel) {
 fun InitPlayListReproduction(viewModel: PlaybackViewModel) {
     Scaffold(topBar = {
         TopBar2(
-            Screens.PlayerScreen.route,
             "Siguiente a reproducir"
         )
     }) { innerPadding ->

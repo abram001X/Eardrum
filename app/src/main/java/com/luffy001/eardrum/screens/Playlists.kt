@@ -44,7 +44,7 @@ fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
     val modifier =
         if (audioPlaying !== null) Modifier.height(totalHeight * 0.79f) else Modifier.fillMaxHeight()
     musicPlaylist.getMusicsPlaylist(name)
-    Scaffold(topBar = { TopBarSearch(isPlaylist = true) }) { innerPadding ->
+    Scaffold(topBar = { TopBarSearch(isPlaylist = true,name) }) { innerPadding ->
         Column(
             Modifier
                 .fillMaxSize()
@@ -132,7 +132,7 @@ fun MenuMusicPlaylist(
                             color = Color.Red
                         )
                     },
-                    onClick = { deleteAudio(audio.contentUri)
+                    onClick = { deleteAudio(listOf(audio.contentUri))
                         expanded = false}
                 )
             }

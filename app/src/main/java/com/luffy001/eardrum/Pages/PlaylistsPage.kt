@@ -326,8 +326,8 @@ fun PlaylistSelect(listAudio: List<AudioFile>) {
             }
         }
     }
-
 }
+
 
 fun getThumbnailsFromMusic(namePlaylist: String): MutableList<Uri> {
     val internalDir = MyApplication.instance.filesDir

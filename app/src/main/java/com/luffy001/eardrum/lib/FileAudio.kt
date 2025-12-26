@@ -78,10 +78,12 @@ fun forceMediaScan(context: Context, directoryName: String) {
     }
 }
 
-fun deleteAudio(fileUri: Uri){
+fun deleteAudio(listUris: List<Uri>){
     val contentResolver = MyApplication.instance.contentResolver
     try {
-        contentResolver.delete(fileUri,null,null)
+        listUris.forEach { uri ->
+            contentResolver.delete(uri,null,null)
+        }
     } catch (securityException : SecurityException){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
             val recoverableSecurityException = securityException as? RecoverableSecurityException
@@ -91,18 +93,4 @@ fun deleteAudio(fileUri: Uri){
     }
 }
 
-fun removeAudios(listUris: List<AudioFile>){
-    val contentResolver = MyApplication.instance.contentResolver
-    try {
-        listUris.forEach { uri ->
-            contentResolver.delete(uri.contentUri,null,null)
-        }
-    } catch (securityException : SecurityException){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
-            val recoverableSecurityException = securityException as? RecoverableSecurityException
-                ?: throw securityException
-            Log.i("remaudio", "Se requiere el permiso del usuario")
-        }
-    }
-}
 
