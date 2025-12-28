@@ -31,6 +31,8 @@ class PlaybackService : MediaSessionService() {
             contentResolver.unregisterContentObserver(it)
         }
     }
+
+
     override fun onCreate() {
         super.onCreate()
         registerObserver()
@@ -38,7 +40,6 @@ class PlaybackService : MediaSessionService() {
         mediaSession = MediaSession.Builder(this, player).build()
 
     }
-
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? =
         mediaSession
 

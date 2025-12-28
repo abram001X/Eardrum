@@ -67,6 +67,9 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences-core:1.2.0")
     implementation("androidx.datastore:datastore-preferences-rxjava2:1.2.0")
     implementation("androidx.datastore:datastore-preferences-rxjava3:1.2.0")
+    // librery gif
+    implementation("io.coil-kt.coil3:coil-compose:3.0.4")
+    implementation("io.coil-kt.coil3:coil-gif:3.0.4")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

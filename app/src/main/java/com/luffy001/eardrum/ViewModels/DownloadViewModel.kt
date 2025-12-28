@@ -25,6 +25,9 @@ class DownloadViewModel : ViewModel() {
     val resultSearch: LiveData<List<Data>> = _resultSearch
     private val _downloadProgress = MutableLiveData(0)
     val downloadProgress: LiveData<Int> = _downloadProgress
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading : LiveData<Boolean> = _isLoading
     fun changeResultSearch(listVideo: List<Data>) {
         _resultSearch.postValue(listVideo)
     }
@@ -45,6 +48,10 @@ class DownloadViewModel : ViewModel() {
         } catch (e: Exception) {
             Log.i("error", "error: ${e.message}")
         }
+    }
+
+    fun changeLoading(){
+        _isLoading.postValue(!_isLoading.value)
     }
 
     private fun downloadProcess(downloadId: Long, downloadManager: DownloadManager) {

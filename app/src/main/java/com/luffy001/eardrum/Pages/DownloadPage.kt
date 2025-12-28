@@ -1,13 +1,13 @@
 package com.luffy001.eardrum.Pages
-
+import android.os.Build.VERSION.SDK_INT
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,7 +20,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
@@ -34,7 +33,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.ImageLoader
+import coil3.compose.AsyncImage
+import coil3.gif.AnimatedImageDecoder
+import coil3.gif.GifDecoder
 import com.luffy001.eardrum.DownloadComponents.ResultSearchComponent
+import com.luffy001.eardrum.MyApplication
 import com.luffy001.eardrum.network.MyApiService
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -46,10 +50,10 @@ import com.luffy001.eardrum.ViewModels.downloadViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 @Composable
 fun InitDownloadPage() {
     val totalWidth = LocalConfiguration.current.screenWidthDp.dp
+    val loading by downloadViewModel.isLoading.observeAsState(false)
     var search by remember { mutableStateOf("") }
     val searchIcon = painterResource(R.drawable.ic_search)
     val progress by downloadViewModel.downloadProgress.observeAsState(0)
@@ -58,7 +62,9 @@ fun InitDownloadPage() {
     Column(
         Modifier
             .fillMaxSize()
-            .padding(start = 10.dp)
+            .padding(start = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Spacer(Modifier.height(10.dp))
         Row(
@@ -72,7 +78,11 @@ fun InitDownloadPage() {
                 100 -> Text("Descarga completada", color = Color.White, fontSize = fontSize)
                 else -> {
                     Text("Descargando: $progress%", color = Color.White, fontSize = fontSize)
-                    CircularProgressIndicator(progress = progress.toFloat() / 100f, color = Color.Yellow, trackColor = Color.White)
+                    CircularProgressIndicator(
+                        progress = progress.toFloat() / 100f,
+                        color = Color.Yellow,
+                        trackColor = Color.White
+                    )
                 }
             }
         }
@@ -98,7 +108,9 @@ fun InitDownloadPage() {
                 maxLines = 1
             )
             Box(Modifier.width(totalWidth * 0.1f)) {
-                IconButton(onClick = { fetchVideos(search) }) {
+                IconButton(onClick = {
+                    fetchVideos(search)
+                }) {
                     Icon(
                         painter = searchIcon,
                         contentDescription = "buscar",
@@ -110,12 +122,17 @@ fun InitDownloadPage() {
 
         }
         Spacer(Modifier.height(10.dp))
+        Log.i("loading", "loading: $loading")
 
+        if (loading) {
+            LoadingGif()
+        }
         ResultSearchComponent()
     }
 }
 
 fun fetchVideos(search: String = "") {
+    downloadViewModel.changeLoading()
     val authInterceptor = Interceptor { chain ->
         val newRequest: Request = chain.request().newBuilder()
             .addHeader("X-RapidAPI-Key", "0c96b5c9e8msh2576380e5ba2f6ap11d52bjsna69225b657d3")
@@ -123,8 +140,8 @@ fun fetchVideos(search: String = "") {
         chain.proceed(newRequest)
     }
     val okHttpClient = OkHttpClient.Builder().addInterceptor(authInterceptor).build()
-    CoroutineScope(Dispatchers.IO).launch {
-        try {
+    try {
+        CoroutineScope(Dispatchers.IO).launch {
             val service = Retrofit.Builder()
                 .baseUrl("https://yt-api.p.rapidapi.com/")
                 .client(okHttpClient)
@@ -133,8 +150,30 @@ fun fetchVideos(search: String = "") {
             val result = service.getResult(search)
             Log.i("fetch", "result: ${result.data.take(n = 6)}")
             downloadViewModel.changeResultSearch(result.data.take(n = 6))
-        } catch (e: Exception) {
-            Log.i("fetch", "error: ${e.message}")
+            downloadViewModel.changeLoading()
         }
+    } catch (e: Exception) {
+        Log.i("fetch", "error: ${e.message}")
     }
+}
+
+@Composable
+fun LoadingGif(){
+    val imageLoader = remember{
+        ImageLoader.Builder(MyApplication.instance)
+            .components {
+                if(SDK_INT >= 28) {
+                    add(AnimatedImageDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
+            }.build()
+    }
+
+    AsyncImage(
+        model = R.drawable.ic_loading_test, // Tu archivo GIF en resources
+        contentDescription = "Animación GIF",
+        imageLoader = imageLoader, // <--- ¡Importante!
+        modifier = Modifier.size(100.dp)
+    )
 }
