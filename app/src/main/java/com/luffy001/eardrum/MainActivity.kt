@@ -60,7 +60,6 @@ class MainActivity : ComponentActivity() {
                 this, Manifest.permission.READ_MEDIA_AUDIO
             ).equals(PackageManager.PERMISSION_GRANTED)
         ) {
-            Log.i("granted", "concedido")
             uiModel.setAudioList(loadFilesAudio(contentResolver))
             uiModel.setPermission(true)
         } else {
@@ -68,7 +67,6 @@ class MainActivity : ComponentActivity() {
             ActivityCompat.requestPermissions(
                 this, arrayOf(permissionToRequest), REQUEST_CODE_AUDIO
             )
-            Log.i("granted", "denegado")
             uiModel.setAudioList(mutableListOf())
             uiModel.setPermission(false)
         }
@@ -78,13 +76,16 @@ class MainActivity : ComponentActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
         if (requestCode == REQUEST_CODE_AUDIO) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 //permiso concedido
                 //Forzar scaneo de mediaStore
+                uiModel.setPermission(true)
                 forceMediaScan(MyApplication.instance, Environment.DIRECTORY_MUSIC)//
                 forceMediaScan(MyApplication.instance, Environment.DIRECTORY_DOWNLOADS)//
                 uiModel.setAudioList(loadFilesAudio(contentResolver))
+
             } else {
+                uiModel.setPermission(false)
                 uiModel.setAudioList(mutableListOf())
             }
         }
