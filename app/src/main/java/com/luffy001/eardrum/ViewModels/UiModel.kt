@@ -15,9 +15,11 @@ class UiModel(private val repository:DatastorePreferences) : ViewModel() {
     private val _items = MutableStateFlow<List<AudioFile>>(emptyList())
     val items: StateFlow<List<AudioFile>> = _items.asStateFlow()
     private val _currentOrder = MutableStateFlow("date")
-
     var listAudioMedia: List<AudioFile> = emptyList()
         private set
+
+    private val _isGranted = MutableStateFlow<Boolean>(false)
+    val isGranted : StateFlow<Boolean> = _isGranted.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -28,6 +30,9 @@ class UiModel(private val repository:DatastorePreferences) : ViewModel() {
         }
     }
 
+    fun setPermission(granted: Boolean){
+        _isGranted.value = granted
+    }
     fun sortItems(orderString: String){
         var list = listAudioMedia
         if(orderString == "date"){

@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.luffy001.eardrum.HomeComponents.BoxData
 import com.luffy001.eardrum.HomeComponents.BoxPlayingMusic
+import com.luffy001.eardrum.HomeComponents.GetPermission
 import com.luffy001.eardrum.HomeComponents.HeaderHome
 import com.luffy001.eardrum.MyApplication
 import com.luffy001.eardrum.Pages.InitDownloadPage
@@ -90,9 +91,11 @@ fun Component(viewModel: PlaybackViewModel) {
 @Composable
 fun ListMusic(viewModel: PlaybackViewModel) {
     val items by uiModel.items.collectAsState()
+
     Column(Modifier.fillMaxSize()) {
         Spacer(Modifier.height(7.dp))
         HeaderHome(viewModel, false)
+        GetPermission()
         LazyColumn(Modifier.fillMaxSize()) {
             items(items) { audio ->
                 BoxData(viewModel, audio) {

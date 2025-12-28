@@ -1,0 +1,40 @@
+package com.luffy001.eardrum.HomeComponents
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.luffy001.eardrum.ViewModels.uiModel
+
+@Composable
+fun GetPermission() {
+    val isGranted by uiModel.isGranted.collectAsState()
+    if (!isGranted) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                modifier = Modifier
+                    .height(300.dp)
+                    .width(200.dp),
+                text = "Permite que Eardrum acceda a tus canciones para empezar a escuchar música 🎶..." +
+                        "En ajustes del dispositivo permite que Eardrum lea los audios 😎",
+                color = Color.LightGray,
+                fontSize = 20.sp
+            )
+        }
+    }
+}

@@ -3,8 +3,10 @@ package com.luffy001.eardrum
 import android.Manifest
 import android.content.ComponentName
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -25,13 +27,14 @@ import com.luffy001.eardrum.ui.theme.EardrumTheme
 
 class MainActivity : ComponentActivity() {
     private val REQUEST_CODE_AUDIO = 100
-    private val viewModel: PlaybackViewModel by viewModels{
-        object : ViewModelProvider.Factory{
-            override fun <T : ViewModel> create(modelClass: Class<T>): T{
+    private val viewModel: PlaybackViewModel by viewModels {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return PlaybackViewModel(DatastorePreferences()) as T
             }
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val sessionToken = SessionToken(
@@ -47,21 +50,30 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun checkAudioPermission() {
-        if (!ContextCompat.checkSelfPermission(
+    private fun checkAudioPermission() { // verificar si los permisos están concedidos
+        val permissionToRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.READ_MEDIA_AUDIO}
+        else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        }
+        if (ContextCompat.checkSelfPermission(
                 this, Manifest.permission.READ_MEDIA_AUDIO
             ).equals(PackageManager.PERMISSION_GRANTED)
         ) {
+            Log.i("granted", "concedido")
             uiModel.setAudioList(loadFilesAudio(contentResolver))
+            uiModel.setPermission(true)
         } else {
-            // el permiso no concedido
+             //el permiso no concedido
             ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.READ_MEDIA_AUDIO), REQUEST_CODE_AUDIO
+                this, arrayOf(permissionToRequest), REQUEST_CODE_AUDIO
             )
+            Log.i("granted", "denegado")
             uiModel.setAudioList(mutableListOf())
+            uiModel.setPermission(false)
         }
     }
-    override fun onRequestPermissionsResult(
+    override fun onRequestPermissionsResult( // pedir permisos
         requestCode: Int, permissions: Array<out String?>, grantResults: IntArray, deviceId: Int
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
@@ -77,4 +89,5 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 }
