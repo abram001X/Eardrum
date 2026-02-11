@@ -1,8 +1,6 @@
 package com.luffy001.eardrum.DownloadComponents
 
 import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -33,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.luffy001.eardrum.BuildConfig
 import com.luffy001.eardrum.ViewModels.downloadViewModel
 import com.luffy001.eardrum.network.Data
 import com.luffy001.eardrum.network.MyApiService
@@ -46,6 +44,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import com.luffy001.eardrum.R
 
+val apikey = BuildConfig.apiKey // acomodar la api
 @Composable
 fun ResultSearchComponent() {
     val resultSearch by downloadViewModel.resultSearch.observeAsState(emptyList<Data>())
@@ -116,7 +115,7 @@ fun DownloadMusic(data: Data) {
 fun fetchDownload(data: Data) {
     val authInterceptor = Interceptor { chain ->
         val newRequest: Request = chain.request().newBuilder()
-            .addHeader("X-RapidAPI-Key", "0c96b5c9e8msh2576380e5ba2f6ap11d52bjsna69225b657d3")
+            .addHeader("X-RapidAPI-Key", apikey)// api oculta
             .build()
         chain.proceed(newRequest)
     }

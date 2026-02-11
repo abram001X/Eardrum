@@ -4,15 +4,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1"
 }
-val propertiesFile = rootProject.file("local.propierties")
-val properties = Properties()
-if (propertiesFile.exists()) {
-    propertiesFile.inputStream().use { inputStream ->
-        properties.load(inputStream)
-    }
-}
-val apiKey = properties.getProperty("apiKey") ?: ""
 
 android {
     namespace = "com.luffy001.eardrum"
@@ -24,8 +17,8 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("String", "API_KEY",  "\"$apiKey\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "MY_API_KEY", "\"${project.findProperty("MY_API_KEY") ?: ""}\"")
     }
 
     buildTypes {
@@ -46,8 +39,10 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
+
 
 dependencies {
     // Retrofit
