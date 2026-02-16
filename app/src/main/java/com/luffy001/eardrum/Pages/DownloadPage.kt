@@ -148,8 +148,8 @@ fun fetchVideos(search: String = "") {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build().create(MyApiService::class.java)
             val result = service.getResult(search)
-            Log.i("fetch", "result: ${result.data.take(n = 6)}")
-            downloadViewModel.changeResultSearch(result.data.take(n = 6))
+            Log.i("fetch", "result: ${result.data.take(n = 10)}")
+            downloadViewModel.changeResultSearch(result.data.take(n = 10))
             downloadViewModel.changeLoading()
         }
     } catch (e: Exception) {

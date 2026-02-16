@@ -1,5 +1,6 @@
 package com.luffy001.eardrum.HomeComponents
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -62,6 +63,7 @@ fun ChildBoxData(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BoxData(
     viewModel: PlaybackViewModel,

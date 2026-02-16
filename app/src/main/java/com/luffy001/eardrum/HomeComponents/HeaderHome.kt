@@ -145,21 +145,40 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
                         }
                     )
                 }
-                if (playlist.isNotEmpty()) DropdownMenuItem(
-                    text = { Text("Agregar a reproducción", fontFamily = FontFamily.SansSerif) },
-                    onClick = {
-                        viewModel.addMediaToPlaylist(interfaceViewModel.elementsSelected)
-                        interfaceViewModel.activatePressed(false)
-                        expanded = false
-                    }
-                )
-                if (expandedOptions) OptionMusic(interfaceViewModel.elementsSelected)
-                DropdownMenuItem(
-                    text = { Text("Eliminar archivos", fontFamily = FontFamily.SansSerif, color = Color.Red) },
-                    onClick = { deleteAudio(interfaceViewModel.elementsSelected.map { it -> it.contentUri })
-                        expanded = false
-                        interfaceViewModel.activatePressed(false)}
-                )
+                if (playlist.isNotEmpty()) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                "Agregar a reproducción",
+                                fontFamily = FontFamily.SansSerif
+                            )
+                        },
+                        onClick = {
+                            viewModel.addMediaToPlaylist(interfaceViewModel.elementsSelected)
+                            interfaceViewModel.activatePressed(false)
+                            expanded = false
+                        }
+                    )
+                }
+                if (expandedOptions) {
+                    OptionMusic(interfaceViewModel.elementsSelected)
+                }
+                if(!isPlaylist) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                "Eliminar archivos",
+                                fontFamily = FontFamily.SansSerif,
+                                color = Color.Red
+                            )
+                        },
+                        onClick = {
+                            deleteAudio(interfaceViewModel.elementsSelected.map { it -> it.contentUri })
+                            expanded = false
+                            interfaceViewModel.activatePressed(false)
+                        }
+                    )
+                }
             }
         }
     }

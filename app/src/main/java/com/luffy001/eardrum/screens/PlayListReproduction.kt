@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -23,6 +24,10 @@ import com.luffy001.eardrum.service.PlaybackViewModel
 
 @Composable
 fun PlayListReproduction(viewModel: PlaybackViewModel) {
+    LaunchedEffect(key1 = true) {
+        // obtener entrada anterior para cambiarla
+        navController.previousBackStackEntry?.savedStateHandle?.set("isPrepared", false)
+    }
     val playlist by viewModel.playList.observeAsState(emptyList<AudioFile>())
     HeaderHome(viewModel, false, isReproduction = true)
     LazyColumn(Modifier.fillMaxSize()) {

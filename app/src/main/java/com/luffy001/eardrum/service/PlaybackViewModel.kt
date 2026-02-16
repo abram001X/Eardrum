@@ -148,6 +148,7 @@ class PlaybackViewModel(private val repository: DatastorePreferences) : ViewMode
             _playList.value?.let { it -> _audioPlaying.postValue(it[controller.currentMediaItemIndex]) }
             _processAudio.postValue(0f)
             _currentPosition.postValue(0f)
+            Log.i("start", "start?")
             playAndStop()
         } catch (e: Exception) {
             Log.i("Error", "Error: ${e.message}")
