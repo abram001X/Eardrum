@@ -71,7 +71,7 @@ fun HeaderHome(
                 }
             }
             Box {
-                OrderMusics(viewModel,isPlaylist)
+                OrderMusics(viewModel, isPlaylist)
             }
         }
     }
@@ -84,9 +84,15 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
     var expanded by remember { mutableStateOf(false) }
     var expandedOptions by remember { mutableStateOf(false) }
     val playlist by viewModel.playList.observeAsState(emptyList<AudioFile>())
-
+    fun closeMusicSelected() {
+        expanded = false
+        expandedOptions = false
+    }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = { interfaceViewModel.activatePressed(false) }) {
+        IconButton(onClick = {
+            interfaceViewModel.activatePressed(false)
+            closeMusicSelected()
+        }) {
             Icon(
                 painter = exitIcon,
                 tint = Color.White,
@@ -114,17 +120,19 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
             contentDescription = "options"
         )
         Box() {
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenu(expanded = expanded, onDismissRequest = { closeMusicSelected() }) {
                 DropdownMenuItem(
                     text = { Text("Agregar a playlist", fontFamily = FontFamily.SansSerif) },
-                    onClick = { expandedOptions = true }
+                    onClick = { expandedOptions = true
+                    closeMusicSelected()}
                 )
                 DropdownMenuItem(
                     text = { Text("Reproduciir", fontFamily = FontFamily.SansSerif) },
                     onClick = {
                         viewModel.setPlaylist(interfaceViewModel.elementsSelected, 0)
                         interfaceViewModel.activatePressed(false)
-                        navController.navigate(Screens.PlayerScreen.route + "/true")
+                        closeMusicSelected()
+                        navController.navigate(Screens.PlayerScreen.route)
                     }
                 )
                 if (isPlaylist) {
@@ -140,7 +148,7 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
                                 namePlaylist,
                                 interfaceViewModel.elementsSelected
                             )
-                            expanded = false
+                            closeMusicSelected()
                             interfaceViewModel.activatePressed(false)
                         }
                     )
@@ -156,14 +164,14 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
                         onClick = {
                             viewModel.addMediaToPlaylist(interfaceViewModel.elementsSelected)
                             interfaceViewModel.activatePressed(false)
-                            expanded = false
+                            closeMusicSelected()
                         }
                     )
                 }
                 if (expandedOptions) {
-                    OptionMusic(interfaceViewModel.elementsSelected)
+                    MenuListsPlaylists(interfaceViewModel.elementsSelected) {closeMusicSelected()}
                 }
-                if(!isPlaylist) {
+                if (!isPlaylist) {
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -174,7 +182,7 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
                         },
                         onClick = {
                             deleteAudio(interfaceViewModel.elementsSelected.map { it -> it.contentUri })
-                            expanded = false
+                            closeMusicSelected()
                             interfaceViewModel.activatePressed(false)
                         }
                     )
@@ -185,7 +193,7 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
 }
 
 @Composable
-fun OrderMusics(viewModel: PlaybackViewModel,isPlaylist: Boolean) {
+fun OrderMusics(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
     var expanded by remember { mutableStateOf(false) }
     val orderMusic = painterResource(R.drawable.ic_order)
     IconButton(onClick = { expanded = true }) {
@@ -211,7 +219,8 @@ fun OrderMusics(viewModel: PlaybackViewModel,isPlaylist: Boolean) {
             text = { Text("alfabéticamente Z-A") },
             onClick = {
                 if (isPlaylist) {
-                    musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.name }.reversed())
+                    musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.name }
+                        .reversed())
                 } else {
                     uiModel.onOrderList("cba")
                 }

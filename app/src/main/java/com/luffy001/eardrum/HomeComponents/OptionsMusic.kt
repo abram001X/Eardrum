@@ -199,8 +199,13 @@ fun ContentBoxData(
 }
 
 @Composable
-fun OptionMusic(listAudio: List<AudioFile>) {
+fun MenuListsPlaylists(listAudio: List<AudioFile>, closeOptionsMusic:()-> Unit) {
     var isSelectOptions by remember { mutableStateOf(true) }
+    fun closeOptions(){
+        isSelectOptions = false
+        interfaceViewModel.activatePressed(false)
+        closeOptionsMusic()
+    }
     if (isSelectOptions) {
         Box(
             Modifier
@@ -210,8 +215,7 @@ fun OptionMusic(listAudio: List<AudioFile>) {
         ) {
             Dialog(
                 onDismissRequest = {
-                    isSelectOptions = false
-                    interfaceViewModel.activatePressed(false)
+                    closeOptions()
                 }) {
                 Column(
                     Modifier
@@ -230,7 +234,7 @@ fun OptionMusic(listAudio: List<AudioFile>) {
                         )
                     }
                     Spacer(Modifier.height(13.dp))
-                    PlaylistSelect(listAudio)
+                    PlaylistSelect(listAudio){closeOptions()}
                 }
             }
         }

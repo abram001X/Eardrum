@@ -1,5 +1,4 @@
 package com.luffy001.eardrum.screens
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.luffy001.eardrum.HomeComponents.BoxData
 import com.luffy001.eardrum.HomeComponents.BoxPlayingMusic
 import com.luffy001.eardrum.HomeComponents.HeaderHome
-import com.luffy001.eardrum.HomeComponents.OptionMusic
+import com.luffy001.eardrum.HomeComponents.MenuListsPlaylists
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.ViewModels.musicPlaylist
@@ -82,7 +81,10 @@ fun MenuMusicPlaylist(
     var expandedOptions by remember { mutableStateOf(false) }
     val optionIcon = painterResource(R.drawable.ic_option)
     val playlist by viewModel.playList.observeAsState(emptyList<AudioFile>())
-
+    fun closeOptionMusic(){
+        expanded = false
+        expandedOptions = false
+    }
     Box(
     ) {
         IconButton(
@@ -93,7 +95,7 @@ fun MenuMusicPlaylist(
                     .size(30.dp), tint = Color.White
             )
         }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        DropdownMenu(expanded = expanded, onDismissRequest = { closeOptionMusic() }) {
             DropdownMenuItem(
                 text = { Text("Agregar a playlist", fontFamily = FontFamily.SansSerif) },
                 onClick = { expandedOptions = true }
@@ -104,7 +106,7 @@ fun MenuMusicPlaylist(
                 text = { Text("Agregar a reproducción", fontFamily = FontFamily.SansSerif) },
                 onClick = {
                     viewModel.addMediaToPlaylist(listOf(audio))
-                    expanded = false
+                    closeOptionMusic()
                 }
             )
             if (isPlaylist) {
@@ -120,6 +122,7 @@ fun MenuMusicPlaylist(
                             namePlaylist ?: "",
                             listOf(audio)
                         )
+                        closeOptionMusic()
                     }
                 )
             }
@@ -133,10 +136,10 @@ fun MenuMusicPlaylist(
                         )
                     },
                     onClick = { deleteAudio(listOf(audio.contentUri))
-                        expanded = false}
+                        closeOptionMusic()}
                 )
             }
-            if (expandedOptions) OptionMusic(listOf(audio))
+            if (expandedOptions) MenuListsPlaylists(listOf(audio)){closeOptionMusic()}
         }
     }
 }

@@ -296,7 +296,7 @@ fun OptionsPlaylist(namePlaylist: String) {
 }
 
 @Composable
-fun PlaylistSelect(listAudio: List<AudioFile>) {
+fun PlaylistSelect(listAudio: List<AudioFile>, closeOptions: ()-> Unit) {
     Spacer(Modifier.height(20.dp))
     LazyColumn(Modifier.fillMaxSize()) {
         items(playlistController.playlistsModel) { name ->
@@ -309,6 +309,7 @@ fun PlaylistSelect(listAudio: List<AudioFile>) {
                     .clickable(onClick = {
                             interfaceViewModel.activatePressed(false)
                             musicPlaylist.addMusicToPlaylist(name, listAudio)
+                        closeOptions()
                         })
             ) {
                 val painter = painterResource(R.drawable.ic_logosimple)
