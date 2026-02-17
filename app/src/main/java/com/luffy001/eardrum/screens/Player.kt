@@ -56,11 +56,12 @@ import com.luffy001.eardrum.ViewModels.uiModel
 import com.luffy001.eardrum.service.PlaybackViewModel
 
 @Composable
-fun InitPlayerApp(viewModel: PlaybackViewModel, isPrepared: Boolean = false) {
+fun InitPlayerApp(viewModel: PlaybackViewModel) {
+    val isPrepared by viewModel.isPrepared.observeAsState(false)
     LaunchedEffect(key1 = true) {
         musicPlaylist.searchMusicByName("")
         uiModel.searchMusicByName("")
-        if (isPrepared) {
+        if (!isPrepared) {
             viewModel.prepareMedia()
         }
     }

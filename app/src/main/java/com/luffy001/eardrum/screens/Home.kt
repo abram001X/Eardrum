@@ -101,7 +101,7 @@ fun ListMusic(viewModel: PlaybackViewModel) {
                 BoxData(viewModel, audio) {
                     val indexItem = items.indexOf(audio)
                     viewModel.setPlaylist(items, indexItem)
-                    navController.navigate(Screens.PlayerScreen.route + "/true")
+                    navController.navigate(Screens.PlayerScreen.route)
                 }
             }
         }

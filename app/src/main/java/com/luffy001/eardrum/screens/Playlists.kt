@@ -60,7 +60,7 @@ fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
                         BoxData(viewModel, audio, true, name) {
                             val indexItem = musicPlaylist.listMusicsModel.indexOf(audio)
                             viewModel.setPlaylist(musicPlaylist.listMusicsModel, indexItem)
-                            navController.navigate(Screens.PlayerScreen.route + "/true")
+                            navController.navigate(Screens.PlayerScreen.route)
                         }
                     }
                 }

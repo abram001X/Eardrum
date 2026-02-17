@@ -24,10 +24,6 @@ import com.luffy001.eardrum.service.PlaybackViewModel
 
 @Composable
 fun PlayListReproduction(viewModel: PlaybackViewModel) {
-    LaunchedEffect(key1 = true) {
-        // obtener entrada anterior para cambiarla
-        navController.previousBackStackEntry?.savedStateHandle?.set("isPrepared", false)
-    }
     val playlist by viewModel.playList.observeAsState(emptyList<AudioFile>())
     HeaderHome(viewModel, false, isReproduction = true)
     LazyColumn(Modifier.fillMaxSize()) {
@@ -35,7 +31,7 @@ fun PlayListReproduction(viewModel: PlaybackViewModel) {
             BoxData(viewModel, audio) {
                 val position = playlist.indexOf(audio)
                 viewModel.changeMusic(position)
-                navController.navigate(Screens.PlayerScreen.route + "/false")
+                navController.navigateUp()
             }
         }
     }
