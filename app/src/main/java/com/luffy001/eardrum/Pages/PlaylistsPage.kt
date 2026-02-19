@@ -73,7 +73,7 @@ fun InitPlayListsPage() {
                 fontSize = 30.sp,
                 fontFamily = FontFamily.SansSerif
             )
-            CreateOrRenamePlaylist(true)
+            CreateOrRenamePlaylist(true){}
         }
         PlaylistsComponent()
     }
@@ -183,18 +183,19 @@ fun PlaylistImagesComponent(name: String) {
 }
 
 @Composable
-fun CreateOrRenamePlaylist(isCreate: Boolean, namePlaylist: String = "") {
+fun CreateOrRenamePlaylist(isCreate: Boolean, namePlaylist: String = "",closeOptionsPlaylist: ()-> Unit) {
     var newNamePlaylist by remember { mutableStateOf("") }
     var extended by remember { mutableStateOf(false) }
     val addIcon = painterResource(R.drawable.ic_add)
     val textComponent = if (isCreate) "Nueva playlist" else "Cambiar nombre"
     val textButton = if (isCreate) "Crear playlist" else "Cambiar nombre"
-    val onClick = {
+    fun onClick(){
         if (isCreate) playlistController.createPlaylist(newNamePlaylist) else playlistController.renamePlaylist(
             namePlaylist,
             newNamePlaylist
         )
         extended = false
+        closeOptionsPlaylist()
     }
     Box {
         if (isCreate) {
@@ -216,6 +217,7 @@ fun CreateOrRenamePlaylist(isCreate: Boolean, namePlaylist: String = "") {
             Dialog(
                 onDismissRequest = {
                     extended = false
+                    closeOptionsPlaylist()
                 }) {
                 Column(
                     Modifier
@@ -272,6 +274,10 @@ fun CreateOrRenamePlaylist(isCreate: Boolean, namePlaylist: String = "") {
 fun OptionsPlaylist(namePlaylist: String) {
     var expanded by remember { mutableStateOf(false) }
     val optionIcon = painterResource(R.drawable.ic_option)
+    fun closeOptionsPlaylist(){
+        playlistController.removePlaylist(namePlaylist)
+        expanded = false
+    }
     Box(
     ) {
         IconButton(
@@ -286,11 +292,10 @@ fun OptionsPlaylist(namePlaylist: String) {
             DropdownMenuItem(
                 text = { Text("Eliminar playlist") },
                 onClick = {
-                    playlistController.removePlaylist(namePlaylist)
-                    expanded = false
+                   closeOptionsPlaylist()
                 }
             )
-            CreateOrRenamePlaylist(false, namePlaylist)
+            CreateOrRenamePlaylist(false, namePlaylist){closeOptionsPlaylist()}
         }
     }
 }

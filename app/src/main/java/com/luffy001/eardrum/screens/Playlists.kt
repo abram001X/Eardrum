@@ -1,4 +1,9 @@
 package com.luffy001.eardrum.screens
+
+import android.app.Activity
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,8 +39,11 @@ import com.luffy001.eardrum.HomeComponents.MenuListsPlaylists
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.ViewModels.musicPlaylist
-import com.luffy001.eardrum.lib.deleteAudio
+import com.luffy001.eardrum.lib.deleteFileAudio
+import com.luffy001.eardrum.lib.deleteFilesAudio
+import com.luffy001.eardrum.lib.deleteOneAudio
 import com.luffy001.eardrum.service.PlaybackViewModel
+
 @Composable
 fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
     val audioPlaying by viewModel.audioPlaying.observeAsState(null)
@@ -43,7 +51,7 @@ fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
     val modifier =
         if (audioPlaying !== null) Modifier.height(totalHeight * 0.79f) else Modifier.fillMaxHeight()
     musicPlaylist.getMusicsPlaylist(name)
-    Scaffold(topBar = { TopBarSearch(isPlaylist = true,name) }) { innerPadding ->
+    Scaffold(topBar = { TopBarSearch(isPlaylist = true, name) }) { innerPadding ->
         Column(
             Modifier
                 .fillMaxSize()
@@ -77,11 +85,19 @@ fun MenuMusicPlaylist(
     audio: AudioFile,
     namePlaylist: String? = null
 ) {
+    val deleteLauncherIntent = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            Log.i("deleteFile", "archivo eliminado")
+            deleteOneAudio(audio.contentUri)
+        }
+    }
     var expanded by remember { mutableStateOf(false) }
     var expandedOptions by remember { mutableStateOf(false) }
     val optionIcon = painterResource(R.drawable.ic_option)
     val playlist by viewModel.playList.observeAsState(emptyList<AudioFile>())
-    fun closeOptionMusic(){
+    fun closeOptionMusic() {
         expanded = false
         expandedOptions = false
     }
@@ -126,7 +142,7 @@ fun MenuMusicPlaylist(
                     }
                 )
             }
-            if(!isPlaylist) {
+            if (!isPlaylist) {
                 DropdownMenuItem(
                     text = {
                         Text(
@@ -135,11 +151,13 @@ fun MenuMusicPlaylist(
                             color = Color.Red
                         )
                     },
-                    onClick = { deleteAudio(listOf(audio.contentUri))
-                        closeOptionMusic()}
+                    onClick = {
+                        deleteFileAudio(audio.contentUri, deleteLauncherIntent)
+                        closeOptionMusic()
+                    }
                 )
             }
-            if (expandedOptions) MenuListsPlaylists(listOf(audio)){closeOptionMusic()}
+            if (expandedOptions) MenuListsPlaylists(listOf(audio)) { closeOptionMusic() }
         }
     }
 }

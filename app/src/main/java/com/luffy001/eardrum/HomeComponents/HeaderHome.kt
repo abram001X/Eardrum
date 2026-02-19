@@ -1,5 +1,9 @@
 package com.luffy001.eardrum.HomeComponents
 
+import android.app.Activity
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -32,7 +36,8 @@ import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.ViewModels.interfaceViewModel
 import com.luffy001.eardrum.ViewModels.musicPlaylist
 import com.luffy001.eardrum.ViewModels.uiModel
-import com.luffy001.eardrum.lib.deleteAudio
+import com.luffy001.eardrum.lib.deleteFilesAudio
+import com.luffy001.eardrum.lib.deleteOneAudio
 import com.luffy001.eardrum.screens.Screens
 import com.luffy001.eardrum.screens.navController
 import com.luffy001.eardrum.service.PlaybackViewModel
@@ -87,6 +92,13 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
     fun closeMusicSelected() {
         expanded = false
         expandedOptions = false
+    }
+    val deleteLauncherIntent = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ){result->
+        if(result.resultCode == Activity.RESULT_OK){
+            Log.i("deleteFile", "archivo eliminado")
+        }
     }
     Row(verticalAlignment = Alignment.CenterVertically) {
         IconButton(onClick = {
@@ -181,7 +193,7 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
                             )
                         },
                         onClick = {
-                            deleteAudio(interfaceViewModel.elementsSelected.map { it -> it.contentUri })
+                            deleteFilesAudio(interfaceViewModel.elementsSelected.map { it -> it.contentUri },deleteLauncherIntent)
                             closeMusicSelected()
                             interfaceViewModel.activatePressed(false)
                         }
