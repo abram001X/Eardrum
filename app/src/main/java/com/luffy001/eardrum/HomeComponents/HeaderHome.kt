@@ -1,5 +1,9 @@
 package com.luffy001.eardrum.HomeComponents
 
+import android.app.Activity
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -27,12 +31,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import com.luffy001.eardrum.Animations.RandomAnimation
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.ViewModels.interfaceViewModel
 import com.luffy001.eardrum.ViewModels.musicPlaylist
 import com.luffy001.eardrum.ViewModels.uiModel
-import com.luffy001.eardrum.lib.deleteAudio
+import com.luffy001.eardrum.lib.deleteFilesAudio
+import com.luffy001.eardrum.lib.deleteOneAudio
 import com.luffy001.eardrum.screens.Screens
 import com.luffy001.eardrum.screens.navController
 import com.luffy001.eardrum.service.PlaybackViewModel
@@ -46,8 +52,6 @@ fun HeaderHome(
     namePlaylist: String = ""
 ) {
     val isRandom by viewModel.isRandom.collectAsState()
-    val randomIcon = painterResource(R.drawable.ic_random)
-    val noRandomIcon = painterResource(R.drawable.ic_order_playlist)
     if ((isReproduction == true && interfaceViewModel.isPress) || isReproduction == false) Row(
         Modifier
             .fillMaxWidth()
@@ -60,18 +64,11 @@ fun HeaderHome(
             Row {
                 PlayHome(viewModel, isPlaylist)
                 IconButton(onClick = { viewModel.activeRandomMode() }) {
-                    Icon(
-                        painter = if (isRandom) noRandomIcon else randomIcon,
-                        tint = Color.White,
-                        modifier = Modifier
-                            .size(35.dp)
-                            .padding(start = 10.dp),
-                        contentDescription = "play"
-                    )
+                    RandomAnimation(isRandom)
                 }
             }
             Box {
-                OrderMusics(viewModel,isPlaylist)
+                OrderMusics(viewModel, isPlaylist)
             }
         }
     }
@@ -84,9 +81,22 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
     var expanded by remember { mutableStateOf(false) }
     var expandedOptions by remember { mutableStateOf(false) }
     val playlist by viewModel.playList.observeAsState(emptyList<AudioFile>())
-
+    fun closeMusicSelected() {
+        expanded = false
+        expandedOptions = false
+    }
+    val deleteLauncherIntent = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ){result->
+        if(result.resultCode == Activity.RESULT_OK){
+            Log.i("deleteFile", "archivo eliminado")
+        }
+    }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = { interfaceViewModel.activatePressed(false) }) {
+        IconButton(onClick = {
+            interfaceViewModel.activatePressed(false)
+            closeMusicSelected()
+        }) {
             Icon(
                 painter = exitIcon,
                 tint = Color.White,
@@ -114,17 +124,19 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
             contentDescription = "options"
         )
         Box() {
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenu(expanded = expanded, onDismissRequest = { closeMusicSelected() }) {
                 DropdownMenuItem(
                     text = { Text("Agregar a playlist", fontFamily = FontFamily.SansSerif) },
-                    onClick = { expandedOptions = true }
+                    onClick = { expandedOptions = true
+                    closeMusicSelected()}
                 )
                 DropdownMenuItem(
                     text = { Text("Reproduciir", fontFamily = FontFamily.SansSerif) },
                     onClick = {
                         viewModel.setPlaylist(interfaceViewModel.elementsSelected, 0)
                         interfaceViewModel.activatePressed(false)
-                        navController.navigate(Screens.PlayerScreen.route + "/true")
+                        closeMusicSelected()
+                        navController.navigate(Screens.PlayerScreen.route)
                     }
                 )
                 if (isPlaylist) {
@@ -140,33 +152,52 @@ fun HandleMusicsSelected(viewModel: PlaybackViewModel, isPlaylist: Boolean, name
                                 namePlaylist,
                                 interfaceViewModel.elementsSelected
                             )
-                            expanded = false
+                            closeMusicSelected()
                             interfaceViewModel.activatePressed(false)
                         }
                     )
                 }
-                if (playlist.isNotEmpty()) DropdownMenuItem(
-                    text = { Text("Agregar a reproducción", fontFamily = FontFamily.SansSerif) },
-                    onClick = {
-                        viewModel.addMediaToPlaylist(interfaceViewModel.elementsSelected)
-                        interfaceViewModel.activatePressed(false)
-                        expanded = false
-                    }
-                )
-                if (expandedOptions) OptionMusic(interfaceViewModel.elementsSelected)
-                DropdownMenuItem(
-                    text = { Text("Eliminar archivos", fontFamily = FontFamily.SansSerif, color = Color.Red) },
-                    onClick = { deleteAudio(interfaceViewModel.elementsSelected.map { it -> it.contentUri })
-                        expanded = false
-                        interfaceViewModel.activatePressed(false)}
-                )
+                if (playlist.isNotEmpty()) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                "Agregar a reproducción",
+                                fontFamily = FontFamily.SansSerif
+                            )
+                        },
+                        onClick = {
+                            viewModel.addMediaToPlaylist(interfaceViewModel.elementsSelected)
+                            interfaceViewModel.activatePressed(false)
+                            closeMusicSelected()
+                        }
+                    )
+                }
+                if (expandedOptions) {
+                    MenuListsPlaylists(interfaceViewModel.elementsSelected) {closeMusicSelected()}
+                }
+                if (!isPlaylist) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                "Eliminar archivos",
+                                fontFamily = FontFamily.SansSerif,
+                                color = Color.Red
+                            )
+                        },
+                        onClick = {
+                            deleteFilesAudio(interfaceViewModel.elementsSelected.map { it -> it.contentUri },deleteLauncherIntent)
+                            closeMusicSelected()
+                            interfaceViewModel.activatePressed(false)
+                        }
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun OrderMusics(viewModel: PlaybackViewModel,isPlaylist: Boolean) {
+fun OrderMusics(viewModel: PlaybackViewModel, isPlaylist: Boolean) {
     var expanded by remember { mutableStateOf(false) }
     val orderMusic = painterResource(R.drawable.ic_order)
     IconButton(onClick = { expanded = true }) {
@@ -192,7 +223,8 @@ fun OrderMusics(viewModel: PlaybackViewModel,isPlaylist: Boolean) {
             text = { Text("alfabéticamente Z-A") },
             onClick = {
                 if (isPlaylist) {
-                    musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.name }.reversed())
+                    musicPlaylist.setPlaylistModel(musicPlaylist.listMusicsModel.sortedBy { it.name }
+                        .reversed())
                 } else {
                     uiModel.onOrderList("cba")
                 }

@@ -44,6 +44,8 @@ class PlaybackViewModel(private val repository: DatastorePreferences) : ViewMode
     private val _isRandom = MutableStateFlow<Boolean>(false)
     val isRandom: StateFlow<Boolean> = _isRandom.asStateFlow()
 
+    private val _isPrepared = MutableLiveData(false)
+    val isPrepared : LiveData<Boolean> = _isPrepared
     init {
         viewModelScope.launch {
             repository.randomMode.collect { random ->
@@ -105,6 +107,7 @@ class PlaybackViewModel(private val repository: DatastorePreferences) : ViewMode
     fun setPlaylist(listAudio: List<AudioFile>, indexItem: Int) {
         _playList.postValue(listAudio)
         _indexItem.postValue(indexItem)
+        _isPrepared.postValue(false)
     }
 
     fun addMediaToPlaylist(listAudio: List<AudioFile>) {
@@ -119,6 +122,7 @@ class PlaybackViewModel(private val repository: DatastorePreferences) : ViewMode
     }
 
     fun prepareMedia() {
+        _isPrepared.postValue(true)
         val listUri = _playList.value?.let {
             it.map { it ->
                 MediaItem.Builder()
@@ -148,6 +152,7 @@ class PlaybackViewModel(private val repository: DatastorePreferences) : ViewMode
             _playList.value?.let { it -> _audioPlaying.postValue(it[controller.currentMediaItemIndex]) }
             _processAudio.postValue(0f)
             _currentPosition.postValue(0f)
+            Log.i("start", "start?")
             playAndStop()
         } catch (e: Exception) {
             Log.i("Error", "Error: ${e.message}")

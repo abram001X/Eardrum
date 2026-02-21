@@ -44,7 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.luffy001.eardrum.HomeComponents.OptionMusic
+import com.luffy001.eardrum.HomeComponents.MenuListsPlaylists
 import com.luffy001.eardrum.PlayerComponents.HandleMusic
 import com.luffy001.eardrum.PlayerComponents.SliderM3
 import com.luffy001.eardrum.PlayerComponents.VisPosition
@@ -56,11 +56,12 @@ import com.luffy001.eardrum.ViewModels.uiModel
 import com.luffy001.eardrum.service.PlaybackViewModel
 
 @Composable
-fun InitPlayerApp(viewModel: PlaybackViewModel, isPrepared: Boolean = false) {
+fun InitPlayerApp(viewModel: PlaybackViewModel) {
+    val isPrepared by viewModel.isPrepared.observeAsState(false)
     LaunchedEffect(key1 = true) {
         musicPlaylist.searchMusicByName("")
         uiModel.searchMusicByName("")
-        if (isPrepared) {
+        if (!isPrepared) {
             viewModel.prepareMedia()
         }
     }
@@ -107,6 +108,10 @@ fun ImagePlayer(viewModel: PlaybackViewModel) {
         .padding(10.dp)
     val imageMusic = painterResource(R.drawable.ic_logosimple)
     val image = imageFromPath(audioPlaying?.contentUri)
+    fun closeOptionsMusic() {
+        expanded = false
+        expandedOptions = false
+    }
     Column(
         Modifier
             .fillMaxWidth()
@@ -133,14 +138,18 @@ fun ImagePlayer(viewModel: PlaybackViewModel) {
                     contentDescription = "options"
                 )
                 Box() {
-                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    DropdownMenu(expanded = expanded, onDismissRequest = { closeOptionsMusic() }) {
                         DropdownMenuItem(text = {
                             Text(
                                 "Agregar a playlist", fontFamily = FontFamily.SansSerif
                             )
                         }, onClick = { expandedOptions = true })
                         if (expandedOptions) {
-                            OptionMusic(listOf<AudioFile>(audioPlaying ?: items[0]))
+                            MenuListsPlaylists(
+                                listOf<AudioFile>(
+                                    audioPlaying ?: items[0]
+                                )
+                            ) { closeOptionsMusic() }
                         }
                     }
                 }

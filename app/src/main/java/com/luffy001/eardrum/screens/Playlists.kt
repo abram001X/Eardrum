@@ -1,5 +1,9 @@
 package com.luffy001.eardrum.screens
-import androidx.compose.foundation.Image
+
+import android.app.Activity
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,12 +35,15 @@ import androidx.compose.ui.unit.dp
 import com.luffy001.eardrum.HomeComponents.BoxData
 import com.luffy001.eardrum.HomeComponents.BoxPlayingMusic
 import com.luffy001.eardrum.HomeComponents.HeaderHome
-import com.luffy001.eardrum.HomeComponents.OptionMusic
+import com.luffy001.eardrum.HomeComponents.MenuListsPlaylists
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.ViewModels.musicPlaylist
-import com.luffy001.eardrum.lib.deleteAudio
+import com.luffy001.eardrum.lib.deleteFileAudio
+import com.luffy001.eardrum.lib.deleteFilesAudio
+import com.luffy001.eardrum.lib.deleteOneAudio
 import com.luffy001.eardrum.service.PlaybackViewModel
+
 @Composable
 fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
     val audioPlaying by viewModel.audioPlaying.observeAsState(null)
@@ -44,7 +51,7 @@ fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
     val modifier =
         if (audioPlaying !== null) Modifier.height(totalHeight * 0.79f) else Modifier.fillMaxHeight()
     musicPlaylist.getMusicsPlaylist(name)
-    Scaffold(topBar = { TopBarSearch(isPlaylist = true,name) }) { innerPadding ->
+    Scaffold(topBar = { TopBarSearch(isPlaylist = true, name) }) { innerPadding ->
         Column(
             Modifier
                 .fillMaxSize()
@@ -60,7 +67,7 @@ fun InitPlaylist(viewModel: PlaybackViewModel, name: String = "") {
                         BoxData(viewModel, audio, true, name) {
                             val indexItem = musicPlaylist.listMusicsModel.indexOf(audio)
                             viewModel.setPlaylist(musicPlaylist.listMusicsModel, indexItem)
-                            navController.navigate(Screens.PlayerScreen.route + "/true")
+                            navController.navigate(Screens.PlayerScreen.route)
                         }
                     }
                 }
@@ -78,11 +85,22 @@ fun MenuMusicPlaylist(
     audio: AudioFile,
     namePlaylist: String? = null
 ) {
+    val deleteLauncherIntent = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            Log.i("deleteFile", "archivo eliminado")
+            deleteOneAudio(audio.contentUri)
+        }
+    }
     var expanded by remember { mutableStateOf(false) }
     var expandedOptions by remember { mutableStateOf(false) }
     val optionIcon = painterResource(R.drawable.ic_option)
     val playlist by viewModel.playList.observeAsState(emptyList<AudioFile>())
-
+    fun closeOptionMusic() {
+        expanded = false
+        expandedOptions = false
+    }
     Box(
     ) {
         IconButton(
@@ -93,7 +111,7 @@ fun MenuMusicPlaylist(
                     .size(30.dp), tint = Color.White
             )
         }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        DropdownMenu(expanded = expanded, onDismissRequest = { closeOptionMusic() }) {
             DropdownMenuItem(
                 text = { Text("Agregar a playlist", fontFamily = FontFamily.SansSerif) },
                 onClick = { expandedOptions = true }
@@ -104,7 +122,7 @@ fun MenuMusicPlaylist(
                 text = { Text("Agregar a reproducción", fontFamily = FontFamily.SansSerif) },
                 onClick = {
                     viewModel.addMediaToPlaylist(listOf(audio))
-                    expanded = false
+                    closeOptionMusic()
                 }
             )
             if (isPlaylist) {
@@ -120,10 +138,11 @@ fun MenuMusicPlaylist(
                             namePlaylist ?: "",
                             listOf(audio)
                         )
+                        closeOptionMusic()
                     }
                 )
             }
-            if(!isPlaylist) {
+            if (!isPlaylist) {
                 DropdownMenuItem(
                     text = {
                         Text(
@@ -132,11 +151,13 @@ fun MenuMusicPlaylist(
                             color = Color.Red
                         )
                     },
-                    onClick = { deleteAudio(listOf(audio.contentUri))
-                        expanded = false}
+                    onClick = {
+                        deleteFileAudio(audio.contentUri, deleteLauncherIntent)
+                        closeOptionMusic()
+                    }
                 )
             }
-            if (expandedOptions) OptionMusic(listOf(audio))
+            if (expandedOptions) MenuListsPlaylists(listOf(audio)) { closeOptionMusic() }
         }
     }
 }

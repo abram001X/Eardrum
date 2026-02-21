@@ -67,7 +67,7 @@ fun BoxPlayingMusic(viewModel: PlaybackViewModel) {
                 .padding(horizontal = 10.dp)
         ) {
             MusicSoundHome(viewModel) {
-                navController.navigate(Screens.PlayerScreen.route + "/false")
+                navController.navigate(Screens.PlayerScreen.route)
             }
         }
     }

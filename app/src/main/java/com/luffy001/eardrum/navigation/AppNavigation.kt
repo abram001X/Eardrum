@@ -22,12 +22,8 @@ fun AppNavigation(viewModel: PlaybackViewModel) {
             InitHome(navController, viewModel)
         }
         composable(
-            route = Screens.PlayerScreen.route + "/{isPrepared}",
-            arguments = listOf(navArgument(name = "isPrepared") {
-                type = NavType.BoolType
-            })
-        ) {
-            InitPlayerApp(viewModel, it.arguments?.getBoolean("isPrepared") ?: true)
+            route = Screens.PlayerScreen.route){
+            InitPlayerApp(viewModel)
         }
         composable(route = Screens.PlaylistReproductionScreen.route) {
             InitPlayListReproduction(viewModel)

@@ -4,15 +4,20 @@ import android.app.RecoverableSecurityException
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
+import android.content.IntentSender
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.compose.runtime.Immutable
 import com.luffy001.eardrum.MyApplication
 import java.io.File
-
+@Immutable
 data class AudioFile(
     val id: Long,
     val name: String,
@@ -78,19 +83,49 @@ fun forceMediaScan(context: Context, directoryName: String) {
     }
 }
 
-fun deleteAudio(listUris: List<Uri>){
-    val contentResolver = MyApplication.instance.contentResolver
+fun deleteFileAudio(
+    uri: Uri,
+    deleteLauncherIntent: ManagedActivityResultLauncher<IntentSenderRequest, ActivityResult>
+) {
     try {
-        listUris.forEach { uri ->
-            contentResolver.delete(uri,null,null)
+        deleteOneAudio(uri)
+    } catch (securityException: SecurityException) {
+        Log.i("remaudio", "Se requiere el permiso del usuario")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val recoverableSecurityException =
+                securityException as? RecoverableSecurityException
+                    ?: throw securityException
+            val intentSender = recoverableSecurityException.userAction.actionIntent.intentSender
+            val intentSenderRequest = IntentSenderRequest.Builder(intentSender).build()
+            deleteLauncherIntent.launch(intentSenderRequest)
         }
-    } catch (securityException : SecurityException){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
-            val recoverableSecurityException = securityException as? RecoverableSecurityException
-                ?: throw securityException
-            Log.i("remaudio", "Se requiere el permiso del usuario")
-        }
+
     }
 }
 
+fun deleteOneAudio(uri: Uri) {
+    val contentResolver = MyApplication.instance.contentResolver
+    contentResolver.delete(uri, null, null)
+}
 
+fun deleteFilesAudio(
+    listUris: List<Uri>,
+    deleteLauncherIntent: ManagedActivityResultLauncher<IntentSenderRequest, ActivityResult>
+) {
+    val contentResolver = MyApplication.instance.contentResolver
+    try {
+        listUris.forEach { uri ->
+            deleteOneAudio(uri)
+        }
+    } catch (securityException: SecurityException) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val pendingIntent = MediaStore.createDeleteRequest(contentResolver, listUris)
+
+            // Lanzamos el diálogo del sistema
+            val intentSenderRequest =
+                IntentSenderRequest.Builder(pendingIntent.intentSender).build()
+            deleteLauncherIntent.launch(intentSenderRequest)
+        }
+
+    }
+}

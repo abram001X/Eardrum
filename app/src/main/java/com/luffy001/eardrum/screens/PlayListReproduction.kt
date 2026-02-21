@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -30,7 +31,7 @@ fun PlayListReproduction(viewModel: PlaybackViewModel) {
             BoxData(viewModel, audio) {
                 val position = playlist.indexOf(audio)
                 viewModel.changeMusic(position)
-                navController.navigate(Screens.PlayerScreen.route + "/false")
+                navController.navigateUp()
             }
         }
     }
