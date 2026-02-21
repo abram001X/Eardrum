@@ -14,9 +14,10 @@ import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
+import androidx.compose.runtime.Immutable
 import com.luffy001.eardrum.MyApplication
 import java.io.File
-
+@Immutable
 data class AudioFile(
     val id: Long,
     val name: String,

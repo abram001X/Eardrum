@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import com.luffy001.eardrum.Animations.RandomAnimation
 import com.luffy001.eardrum.R
 import com.luffy001.eardrum.lib.AudioFile
 import com.luffy001.eardrum.ViewModels.interfaceViewModel
@@ -51,8 +52,6 @@ fun HeaderHome(
     namePlaylist: String = ""
 ) {
     val isRandom by viewModel.isRandom.collectAsState()
-    val randomIcon = painterResource(R.drawable.ic_random)
-    val noRandomIcon = painterResource(R.drawable.ic_order_playlist)
     if ((isReproduction == true && interfaceViewModel.isPress) || isReproduction == false) Row(
         Modifier
             .fillMaxWidth()
@@ -65,14 +64,7 @@ fun HeaderHome(
             Row {
                 PlayHome(viewModel, isPlaylist)
                 IconButton(onClick = { viewModel.activeRandomMode() }) {
-                    Icon(
-                        painter = if (isRandom) noRandomIcon else randomIcon,
-                        tint = Color.White,
-                        modifier = Modifier
-                            .size(35.dp)
-                            .padding(start = 10.dp),
-                        contentDescription = "play"
-                    )
+                    RandomAnimation(isRandom)
                 }
             }
             Box {

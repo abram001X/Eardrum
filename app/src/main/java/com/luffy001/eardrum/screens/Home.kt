@@ -46,6 +46,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.luffy001.eardrum.Animations.SearchAnimationTopBar
 import com.luffy001.eardrum.HomeComponents.BoxData
 import com.luffy001.eardrum.HomeComponents.BoxPlayingMusic
 import com.luffy001.eardrum.HomeComponents.GetPermission
@@ -98,7 +99,7 @@ fun ListMusic(viewModel: PlaybackViewModel) {
         HeaderHome(viewModel, false)
         GetPermission()
         LazyColumn(Modifier.fillMaxSize()) {
-            items(items) { audio ->
+            items(items = items, key = {audio-> audio.id}, contentType = {"audio_item"}) { audio ->
                 BoxData(viewModel, audio) {
                     val indexItem = items.indexOf(audio)
                     viewModel.setPlaylist(items, indexItem)
@@ -127,12 +128,6 @@ fun InitHome(navigation: NavController, viewModel: PlaybackViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarSearch(isPlaylist: Boolean, name: String = "Eardrum") {
-    val searchIcon = painterResource(R.drawable.ic_search_icon)
-    var expanded by remember { mutableStateOf(false) }
-    var nameMusic by remember { mutableStateOf("") }
-    val arrowBack = painterResource(R.drawable.ic_remove_x)
-    val totalWidth = LocalConfiguration.current.screenWidthDp.dp
-    val colorTitle = if(isPlaylist) Color.Yellow else Color.White
     Box(
         modifier = Modifier.background(
             Color.Black
@@ -142,63 +137,7 @@ fun TopBarSearch(isPlaylist: Boolean, name: String = "Eardrum") {
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = Color.Transparent, // Color de fondo personalizado (un azul vibrante)
             ), title = {
-                Row(
-                    horizontalArrangement = if (!expanded) Arrangement.SpaceBetween else Arrangement.SpaceAround,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(0.dp)
-                        .fillMaxWidth()
-                ) {
-                    if (!expanded) {
-                        Text(text = name, color = colorTitle)
-//                        Button(onClick = { recargar lista de app
-//                            uiModel.setAudioList(loadFilesAudio(MyApplication.instance.contentResolver))
-//                            Log.i("reload", "lista de musica recargada")
-//                        }) { Text(text = "recargar")}
-                        IconButton(onClick = { expanded = true }) {
-                            Icon(
-                                painter = searchIcon,
-                                tint = Color.White,
-                                modifier = Modifier.size(25.dp),
-                                contentDescription = "play"
-                            )
-                        }
-                    } else {
-                        BasicTextField(
-                            value = nameMusic,
-                            onValueChange = { it ->
-                                nameMusic = it
-                                if (!isPlaylist) uiModel.searchMusicByName(it) else musicPlaylist.searchMusicByName(
-                                    it
-                                )
-                            },
-                            modifier = Modifier
-                                .width(totalWidth * 0.80f)
-                                .clip(RoundedCornerShape(7.dp))
-                                .height(40.dp)
-                                .background(Color.LightGray.copy(alpha = 0.4f))
-                                .padding(7.dp),
-                            textStyle = TextStyle(fontSize = 20.sp, color = Color.White),
-                            maxLines = 1
-                        )
-
-                        IconButton(onClick = {
-                            if (!isPlaylist) {
-                                uiModel.searchMusicByName("")
-                            } else musicPlaylist.searchMusicByName(
-                                ""
-                            )
-                            expanded = false
-                        }) {
-                            Icon(
-                                painter = arrowBack,
-                                tint = Color.White,
-                                modifier = Modifier.size(30.dp),
-                                contentDescription = "back"
-                            )
-                        }
-                    }
-                }
+                SearchAnimationTopBar(isPlaylist, name)
             })
     }
 }

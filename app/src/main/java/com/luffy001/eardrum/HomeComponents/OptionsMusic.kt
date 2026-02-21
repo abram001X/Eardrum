@@ -1,5 +1,7 @@
 package com.luffy001.eardrum.HomeComponents
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -37,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
 import com.luffy001.eardrum.Pages.PlaylistSelect
 import com.luffy001.eardrum.PlayerComponents.msToTime
 import com.luffy001.eardrum.R
@@ -72,55 +76,40 @@ fun BoxData(
     namePlaylist: String? = null,
     onClick: () -> Unit
 ) {
-    val items by uiModel.items.collectAsState()
-    var colorBackground by remember { mutableStateOf(Color.Transparent) }
     var isSelected by remember { mutableStateOf(false) }
-    var selectOrNavigate by remember { mutableStateOf({}) }
-    var selectMusic by remember { mutableStateOf({}) }
     val audioPlaying by viewModel.audioPlaying.observeAsState(null)
-    LaunchedEffect(interfaceViewModel.isPress) {
-        if (!interfaceViewModel.isPress) isSelected = false
-    }
-    LaunchedEffect(
-        interfaceViewModel.elementsSelected,
-        if (!isPlaylist) items else musicPlaylist.listMusicsModel
-    ) {
-        isSelected = (interfaceViewModel.elementsSelected.contains(audio))
-    }
-    LaunchedEffect(
-        isSelected,
-        if (!isPlaylist) items else musicPlaylist.listMusicsModel, audioPlaying
-    ) {
-        colorBackground =
-            if (isSelected) {
-                Color.LightGray.copy(alpha = 0.5f)
-            } else if (audio.contentUri == (audioPlaying?.contentUri ?: "")) {
-                Color.Yellow.copy(alpha = 0.7f)
-            } else Color.Transparent
-        selectOrNavigate = {
-            if (isSelected) {
-                interfaceViewModel.removeMusicSelect(audio)
-                isSelected = false
-            } else if (interfaceViewModel.isPress) {
-                interfaceViewModel.setElementsSelected(
-                    audio
-                )
-                isSelected = true
-            } else {
-                onClick()
-            }
-        }
-        selectMusic = {
-            if (isSelected) {
-                interfaceViewModel.removeMusicSelect(audio)
-                isSelected = false
-            } else {
-                interfaceViewModel.setElementsSelected(audio)
-                interfaceViewModel.activatePressed(true)
-                isSelected = true
-            }
+    val colorBackground by animateColorAsState(
+        targetValue = if (isSelected) {
+            Color.LightGray.copy(alpha = 0.5f)
+        } else if (audio.contentUri == (audioPlaying?.contentUri ?: "")) {
+            Color.Yellow.copy(alpha = 0.7f)
+        } else Color.Transparent,
+        animationSpec = tween(durationMillis = 300)
+    )
+    fun selectOrNavigate(){
+        if (isSelected) {
+            interfaceViewModel.removeMusicSelect(audio)
+            isSelected = false
+        } else if (interfaceViewModel.isPress) {
+            interfaceViewModel.setElementsSelected(
+                audio
+            )
+            isSelected = true
+        } else {
+            onClick()
         }
     }
+    fun selectMusic(){
+        if (isSelected) {
+            interfaceViewModel.removeMusicSelect(audio)
+            isSelected = false
+        } else {
+            interfaceViewModel.setElementsSelected(audio)
+            interfaceViewModel.activatePressed(true)
+            isSelected = true
+        }
+    }
+
     val modifier = Modifier
         .fillMaxWidth()
         .height(70.dp)
@@ -154,13 +143,10 @@ fun ContentBoxData(
         contentAlignment = Alignment.Center,
     ) {
         if (image !== null) {
-            Image(
-                bitmap = image,
-                contentDescription = audio.name,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(5.dp)),
-                contentScale = ContentScale.Crop,
+            AsyncImage(
+                model = audio.contentUri,
+                contentDescription = null,
+                modifier = Modifier.size(50.dp)
             )
         } else Image(
             painter,
